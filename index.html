@@ -34,6 +34,23 @@
   --shake-duration: 600ms;
 }
 
+/* ========== Light Theme ========== */
+body.light-theme {
+  --color-bg: #ffffff;
+  --color-surface: #f5f5f5;
+  --color-text: #1a1a1b;
+  --color-text-dim: #787c7e;
+  --color-border: #d3d6da;
+  --color-border-active: #878a8c;
+  --color-correct: #6aaa64;
+  --color-present: #c9b458;
+  --color-absent: #787c7e;
+  --color-key-bg: #d3d6da;
+  --color-key-text: #1a1a1b;
+  --color-toast-bg: #1a1a1b;
+  --color-toast-text: #ffffff;
+}
+
 /* ========== Reset + Dark Theme ========== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -504,8 +521,9 @@ h1 {
 .stats-grid {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .stat-item {
@@ -787,6 +805,14 @@ body.lang-es .key-enie {
     <a href="./" class="daily-link" id="daily-link">Play Today's FADELE</a>
   </div>
   <div class="header-right">
+    <button class="header-btn" id="btn-theme" aria-label="Toggle theme">
+      <svg id="theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+      <svg id="theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
     <button class="header-btn" id="btn-settings" aria-label="Settings">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
@@ -907,6 +933,10 @@ body.lang-es .key-enie {
         <div class="stat-label">Win %</div>
       </div>
       <div class="stat-item">
+        <div class="stat-value" id="stat-avg-guesses">0</div>
+        <div class="stat-label">Avg<br>Guesses</div>
+      </div>
+      <div class="stat-item">
         <div class="stat-value" id="stat-streak">0</div>
         <div class="stat-label">Current<br>Streak</div>
       </div>
@@ -1004,6 +1034,7 @@ const I18N = {
     statsTitle: 'STATISTICS',
     played: 'Played',
     winPct: 'Win %',
+    avgGuesses: 'Avg<br>Guesses',
     currentStreak: 'Current<br>Streak',
     maxStreak: 'Max<br>Streak',
     distTitle: 'Guess Distribution',
@@ -1027,6 +1058,9 @@ const I18N = {
     difficultyLabel: 'Difficulty',
     easyBtn: 'Easy',
     hardBtn: 'Hard',
+    themeLabel: 'Theme',
+    darkBtn: 'Dark',
+    lightBtn: 'Light',
     settingsNote: 'Language changes reload the page. Difficulty applies immediately.'
   },
   es: {
@@ -1052,6 +1086,7 @@ const I18N = {
     statsTitle: 'ESTADISTICAS',
     played: 'Jugadas',
     winPct: '% Victorias',
+    avgGuesses: 'Prom.<br>Intentos',
     currentStreak: 'Racha<br>Actual',
     maxStreak: 'Racha<br>Maxima',
     distTitle: 'Distribucion de Intentos',
@@ -1075,6 +1110,9 @@ const I18N = {
     difficultyLabel: 'Dificultad',
     easyBtn: 'Facil',
     hardBtn: 'Dificil',
+    themeLabel: 'Tema',
+    darkBtn: 'Oscuro',
+    lightBtn: 'Claro',
     settingsNote: 'Cambiar idioma recarga la pagina. La dificultad aplica de inmediato.'
   }
 };
@@ -1088,14 +1126,15 @@ const SETTINGS_KEY = 'fadele-settings';
 function loadSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return { language: 'en', difficulty: 'easy' };
+    if (!raw) return { language: 'en', difficulty: 'easy', theme: 'dark' };
     const s = JSON.parse(raw);
     return {
       language: (s.language === 'es') ? 'es' : 'en',
-      difficulty: (s.difficulty === 'hard') ? 'hard' : 'easy'
+      difficulty: (s.difficulty === 'hard') ? 'hard' : 'easy',
+      theme: (s.theme === 'light') ? 'light' : 'dark'
     };
   } catch (e) {
-    return { language: 'en', difficulty: 'easy' };
+    return { language: 'en', difficulty: 'easy', theme: 'dark' };
   }
 }
 
@@ -1105,6 +1144,7 @@ function saveSettings(settings) {
 
 let gameSettings = loadSettings();
 currentLang = gameSettings.language;
+if (gameSettings.theme === 'light') document.body.classList.add('light-theme');
 
 // Language-suffixed storage keys
 function stateKey() { return 'fadele-state-' + currentLang; }
@@ -1667,6 +1707,15 @@ function renderStats() {
   document.getElementById('stat-played').textContent = stats.gamesPlayed;
   document.getElementById('stat-win-pct').textContent =
     stats.gamesPlayed > 0 ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) : 0;
+  // Average guesses (only counting wins)
+  let totalGuesses = 0, totalWins = 0;
+  for (let i = 1; i <= 6; i++) {
+    const count = stats.guessDistribution[i] || 0;
+    totalGuesses += i * count;
+    totalWins += count;
+  }
+  document.getElementById('stat-avg-guesses').textContent =
+    totalWins > 0 ? (totalGuesses / totalWins).toFixed(1) : 0;
   document.getElementById('stat-streak').textContent = stats.currentStreak;
   document.getElementById('stat-max-streak').textContent = stats.maxStreak;
 
@@ -1897,6 +1946,20 @@ function restoreFromState(saved) {
 // ========== Settings UI ==========
 document.getElementById('btn-settings').addEventListener('click', () => openModal('modal-settings'));
 
+// Theme toggle button
+function updateThemeIcon() {
+  const isLight = gameSettings.theme === 'light';
+  document.getElementById('theme-icon-moon').style.display = isLight ? 'none' : 'block';
+  document.getElementById('theme-icon-sun').style.display = isLight ? 'block' : 'none';
+}
+document.getElementById('btn-theme').addEventListener('click', () => {
+  gameSettings.theme = gameSettings.theme === 'light' ? 'dark' : 'light';
+  saveSettings(gameSettings);
+  document.body.classList.toggle('light-theme', gameSettings.theme === 'light');
+  updateThemeIcon();
+});
+updateThemeIcon();
+
 // Toggle group handler
 document.querySelectorAll('.toggle-group').forEach(group => {
   group.querySelectorAll('.toggle-btn').forEach(btn => {
@@ -2002,7 +2065,7 @@ function applyLanguage() {
   // Stats modal labels
   document.querySelector('#modal-stats h2').textContent = t('statsTitle');
   const statLabels = document.querySelectorAll('.stat-label');
-  const labelKeys = ['played', 'winPct', 'currentStreak', 'maxStreak'];
+  const labelKeys = ['played', 'winPct', 'avgGuesses', 'currentStreak', 'maxStreak'];
   statLabels.forEach((el, i) => { if (labelKeys[i]) el.innerHTML = t(labelKeys[i]); });
 
   document.querySelector('.distribution h3').textContent = t('distTitle');
@@ -2022,7 +2085,6 @@ function applyLanguage() {
   const hardBtn = document.querySelector('[data-i18n="hardBtn"]');
   if (easyBtn) easyBtn.textContent = t('easyBtn');
   if (hardBtn) hardBtn.textContent = t('hardBtn');
-
   // Language badge in header
   document.getElementById('lang-badge').textContent = currentLang.toUpperCase();
 
