@@ -998,6 +998,9 @@ const I18N = {
     fadeNote: 'This is what a faded row looks like \u2014 the colors dissolve like fading memories.',
     keyboardNote: 'The <strong>keyboard colors never fade</strong> \u2014 they are your persistent memory aid. Use them wisely!',
     newDaily: 'A new FADELE is available each day.',
+    hardModeTitle: 'HARD MODE',
+    hardModeP1: 'In Hard mode, <strong>every row fades just 3 seconds</strong> after being revealed \u2014 starting from your very first guess.',
+    hardModeP2: 'The keyboard <strong>gives no color hints</strong> at all. You must rely entirely on your memory!',
     statsTitle: 'STATISTICS',
     played: 'Played',
     winPct: 'Win %',
@@ -1043,6 +1046,9 @@ const I18N = {
     fadeNote: 'Asi se ve una fila desvanecida \u2014 los colores se disuelven como recuerdos.',
     keyboardNote: 'Los <strong>colores del teclado nunca se desvanecen</strong> \u2014 son tu ayuda de memoria. ¡Usalos sabiamente!',
     newDaily: 'Un nuevo FADELE esta disponible cada dia.',
+    hardModeTitle: 'MODO DIFICIL',
+    hardModeP1: 'En modo Dificil, <strong>cada fila se desvanece a los 3 segundos</strong> de ser revelada \u2014 desde el primer intento.',
+    hardModeP2: 'El teclado <strong>no muestra ninguna pista de color</strong>. \u00a1Dependes completamente de tu memoria!',
     statsTitle: 'ESTADISTICAS',
     played: 'Jugadas',
     winPct: '% Victorias',
@@ -1982,6 +1988,9 @@ function applyLanguage() {
     </div>
     <p class="fade-note">${t('fadeNote')}</p>
     <p>${t('keyboardNote')}</p>
+    <h2 style="margin-top:20px">${t('hardModeTitle')}</h2>
+    <p>${t('hardModeP1')}</p>
+    <p>${t('hardModeP2')}</p>
     <p>${t('newDaily')}</p>
   `;
 
