@@ -665,6 +665,70 @@ h1 {
   min-height: 1.2em;
 }
 
+/* ========== Settings Modal ========== */
+.toggle-group {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-dim);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.toggle-btn.active {
+  background-color: var(--color-correct);
+  color: #fff;
+}
+
+.toggle-btn:not(.active):hover {
+  background-color: var(--color-border);
+}
+
+.setting-row {
+  margin-bottom: 20px;
+}
+
+.setting-row label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-dim);
+  margin-bottom: 8px;
+}
+
+/* ========== Hard Mode Fading ========== */
+body.hard-mode .row.faded .tile[data-state="correct"],
+body.hard-mode .row.faded .tile[data-state="present"],
+body.hard-mode .row.faded .tile[data-state="absent"] {
+  transition: background-color 1s ease-out,
+              border-color 1s ease-out,
+              color 1s ease-out;
+}
+
+/* ========== Ñ Key ========== */
+.key-enie {
+  display: none;
+}
+
+body.lang-es .key-enie {
+  display: flex;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 480px) {
   :root {
@@ -709,6 +773,11 @@ h1 {
     <a href="./" class="daily-link" id="daily-link">Play Today's FADELE</a>
   </div>
   <div class="header-right">
+    <button class="header-btn" id="btn-settings" aria-label="Settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
     <button class="header-btn" id="btn-stats" aria-label="Statistics">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 20V10M12 20V4M6 20v-6"/>
@@ -747,6 +816,7 @@ h1 {
     <button class="key" data-key="j">j</button>
     <button class="key" data-key="k">k</button>
     <button class="key" data-key="l">l</button>
+    <button class="key key-enie" data-key="ñ">ñ</button>
     <div style="flex:0.5"></div>
   </div>
   <div class="keyboard-row">
@@ -852,28 +922,180 @@ h1 {
   </div>
 </div>
 
+<!-- ========== Settings Modal ========== -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal" role="dialog" aria-label="Settings">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 data-i18n="settingsTitle">SETTINGS</h2>
+    <div class="setting-row">
+      <label data-i18n="languageLabel">Language</label>
+      <div class="toggle-group" id="toggle-language">
+        <button class="toggle-btn active" data-value="en">English</button>
+        <button class="toggle-btn" data-value="es">Español</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label data-i18n="difficultyLabel">Difficulty</label>
+      <div class="toggle-group" id="toggle-difficulty">
+        <button class="toggle-btn active" data-value="easy" data-i18n="easyBtn">Easy</button>
+        <button class="toggle-btn" data-value="hard" data-i18n="hardBtn">Hard</button>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--color-text-dim);text-align:center;" data-i18n="settingsNote">Language changes reload the page. Difficulty applies immediately.</p>
+  </div>
+</div>
+
 <script>
 // ========== Word Lists ==========
-const ANSWERS_RAW = "aback,abase,abate,abbey,abbot,abhor,abide,abled,abode,abort,about,above,abuse,abyss,acids,acorn,acres,acted,actor,acute,adage,added,adept,admin,admit,adobe,adopt,adore,adorn,adult,aegis,afoot,after,again,agent,agile,aging,aglow,agony,agree,ahead,aided,aimed,aisle,alarm,album,alert,algae,alibi,alien,align,alike,alive,allay,alley,allot,allow,alloy,aloft,alone,along,aloof,alpha,altar,alter,amaze,amber,amble,amend,amine,amino,amiss,among,ample,amuse,angel,anger,angle,angry,angst,anime,ankle,annex,antic,anvil,aorta,apart,apple,apply,apron,aptly,arbor,arena,argue,arise,armor,aroma,arose,array,arrow,arson,artsy,ascot,ashen,aside,asset,atlas,atone,attic,audio,audit,augur,aunts,avail,avert,avian,avoid,await,awake,award,aware,awful,awoke,axial,axiom,azure,bacon,badge,badly,bagel,baker,balls,banal,bands,banjo,banks,baron,bases,basic,basin,basis,batch,bathe,baton,beard,beast,beech,began,begin,begun,being,bells,belly,below,bench,berry,bikes,billy,birds,birth,black,blade,blame,bland,blank,blast,blaze,bleak,bleat,bleed,blend,bless,blimp,blind,blini,blink,bliss,blitz,bloat,block,bloke,blond,blood,bloom,blown,blues,bluff,blunt,blurb,blurt,blush,board,boast,boats,bolts,bombs,bonds,bones,bonus,books,booth,boots,booty,borax,borne,bosom,bossy,bound,brace,braid,brain,brake,brand,brash,brass,brave,brawn,bread,break,breed,brick,bride,brief,bring,brink,briny,brisk,broad,broil,broke,brood,brook,broth,brown,brush,brute,buddy,budge,buggy,build,built,bulge,bulky,bully,bunch,bunny,burly,burnt,burst,buyer,cabin,cable,cache,cadet,camel,cameo,canal,candy,carat,cards,cargo,carol,carry,carve,catch,cater,cause,cedar,cells,chain,chair,chalk,champ,chant,chaos,charm,chart,chase,cheap,cheat,check,cheek,cheer,chess,chest,chick,chief,child,chili,chill,china,chips,choir,chord,chore,chose,chunk,churn,cider,cigar,cinch,circa,civic,civil,claim,clamp,clang,clank,clash,clasp,class,clean,clear,clerk,click,cliff,climb,cling,clips,cloak,clock,clone,close,cloth,cloud,clout,clown,clubs,cluck,clued,clump,clung,coach,coast,cobra,cocoa,coils,coins,colon,color,comet,comic,comma,conch,coral,corps,costs,couch,could,count,coupe,court,cover,covet,crack,craft,cramp,crane,crash,crass,crate,crave,crawl,craze,crazy,creak,cream,creed,creek,creep,crest,crews,crick,cried,crime,crisp,croak,cross,crowd,crown,crude,cruel,crush,crust,cubic,curry,curse,curve,cyber,cycle,dairy,daily,dance,dated,datum,deals,dealt,death,debit,debug,debut,decal,decay,decks,decor,decoy,decry,deity,delay,delta,delve,demon,denim,dense,depot,depth,derby,desks,deter,detox,deuce,devil,diary,digit,dilly,dimly,diner,dingy,dirty,disco,ditch,ditto,ditty,diver,dizzy,dodge,dolls,donor,donut,doubt,dough,downs,dozen,draft,drain,drake,drama,drank,drape,drawn,dread,dream,dress,dried,drift,drill,drink,drive,droit,droll,drone,drool,droop,drops,dross,drove,drown,drums,drunk,dryer,ducal,duels,dummy,dunce,dunes,dwarf,dwell,dying,eager,eagle,early,earth,eased,easel,eaten,eater,ebony,edged,edict,eight,elbow,elder,elect,elite,elude,email,ember,emcee,emoji,empty,ended,enemy,enjoy,ennui,enter,entry,envoy,epoch,equal,equip,erase,erode,error,erupt,essay,ether,ethic,evade,event,every,evict,evoke,exact,exalt,exams,excel,exert,exile,exist,expat,expel,extra,exude,exult,fable,facet,facts,faint,fairy,faith,falls,false,fancy,fangs,farce,fatal,fatty,fault,fauna,favor,feast,feats,fence,ferry,fetal,fetch,fetid,fever,fewer,fiber,fibre,fifth,fifty,fight,filth,final,finch,fired,first,flags,flair,flake,flame,flank,flaps,flare,flash,flask,fleet,flesh,flies,fling,flint,float,flock,flood,floor,flora,floss,flour,flown,fluid,fluke,flung,flush,flute,focal,focus,foggy,folly,fonts,force,forge,forms,forth,forty,forum,found,foxes,foyer,frame,frank,fraud,freak,freed,fresh,friar,fried,frill,frisk,front,frost,froze,fruit,fully,fungi,funny,furry,fuzzy,gaffe,gains,gamma,gases,gauge,gaunt,gauze,gavel,gazer,gears,genes,genre,ghost,giant,gifts,given,giver,gland,glare,glass,glaze,gleam,glide,glint,globe,gloom,glory,gloss,glove,glyph,gnome,goals,godly,going,goods,goose,gorge,grace,grade,graft,grain,grand,grant,grape,graph,grasp,grass,grate,grave,gravy,great,greed,green,greet,grief,grill,grime,grind,gripe,groan,groom,grope,gross,group,grove,grown,guard,guava,guess,guest,guide,guild,guilt,guise,gulch,gummy,gusto,gusty,gypsy,habit,hairy,hands,handy,happy,harsh,haunt,haven,hazel,heads,heard,heart,heavy,hedge,heels,hefty,heirs,hello,herbs,heron,hills,hinge,hippo,hired,hobby,hoist,holds,holes,holly,homes,honey,honor,hooks,hoped,horns,horse,hosts,hotel,hours,house,hover,human,humid,humor,hurry,hydro,hyena,hyper,ideal,idiom,idiot,image,imply,inane,incur,index,indie,inept,inert,infer,ingot,inner,input,irony,islet,issue,ivory,jaunt,jelly,jewel,jiffy,jimmy,joker,jolly,joust,judge,juice,juicy,jumbo,jumpy,juror,kayak,kebab,keeps,kicks,knack,knead,kneel,knelt,knife,knobs,knock,knoll,knots,known,label,labor,laced,laden,lance,lands,lanes,lapse,large,laser,latch,later,lathe,latte,laugh,layer,leads,leaky,leapt,learn,lease,least,leave,ledge,legal,lemon,level,lever,light,liked,liken,lilac,limbs,limit,linen,liner,lines,lingo,links,lions,lists,liter,lived,liver,livid,llama,loads,loans,lobby,local,locks,locus,lodge,lofty,logic,login,looks,loose,lorry,lossy,lousy,lover,lower,lowly,loyal,lucid,lucky,lumen,lumps,lunar,lunch,lunge,lusty,lyric,macaw,macho,macro,magic,major,maker,manor,maple,march,marks,marsh,masks,match,mayor,mealy,means,media,medal,melee,melon,mercy,merge,merit,merry,messy,metal,meter,midst,might,mills,mimic,minds,miner,minor,minus,mirth,miser,misty,mixed,mixer,mocha,model,moist,moldy,money,monks,month,moody,moral,morph,mossy,motel,moths,motor,motto,mound,mount,mourn,mouse,mouth,moved,mover,movie,mucky,mucus,muddy,mulch,mural,murky,mushy,music,musty,muted,myths,naive,named,nanny,nasal,nasty,naval,needs,nerve,never,newly,niche,night,nimby,ninja,noble,nobly,noise,noisy,nomad,norms,north,notch,noted,notes,novel,nudge,nurse,occur,ocean,octet,often,olive,omega,onion,onset,opera,opted,optic,orbit,order,organ,other,ought,ounce,outer,outdo,overt,owner,oxide,ozone,paced,packs,pages,pains,paint,pairs,panda,panel,panic,pants,paper,parks,parts,party,pasta,paste,patch,patio,pause,peach,pearl,pedal,penny,peril,perky,pesto,petal,phase,phone,photo,piano,picks,piece,piggy,pilot,pinch,pixel,pixie,pizza,place,plaid,plain,plane,plank,plans,plant,plate,plaza,plead,pleat,plier,plods,plots,pluck,plugs,plumb,plume,plump,plums,plunk,plush,poems,poets,point,poise,poker,polar,polls,polyp,poppy,porch,posed,poser,posts,pouch,pound,power,prank,prawn,press,price,pride,prime,print,prior,privy,prize,probe,prone,prong,proof,prose,proud,prove,proxy,prude,prune,psalm,pubic,pudgy,pulse,punch,pupil,purge,purse,pushy,quest,queue,quick,quiet,quill,quirk,quota,quote,rabbi,radar,radio,rainy,raise,rally,ramen,ranch,range,rapid,rated,ratio,raven,reach,react,reads,ready,realm,rebel,rebus,recap,recon,refer,reign,relax,relay,relic,remit,renal,renew,repay,repel,reply,resin,rests,retro,retry,reuse,revel,rigor,rings,rinse,risen,risky,rival,river,rivet,roads,roast,robin,robot,rocky,rogue,roots,roses,rotor,rouge,rough,round,route,rover,rowdy,royal,ruins,ruled,ruler,rules,rumor,rural,rusty,sadly,saint,salad,sales,salon,salty,salve,salvo,sandy,satin,sauce,sauna,savor,scale,scalp,scald,scams,scamp,scant,scare,scarf,scary,scene,scent,scoff,scold,scone,scoop,scope,score,scorn,scout,scowl,scram,scrap,scree,screw,scrub,sedan,seize,sense,sepia,serve,setup,seven,sever,shade,shaft,shake,shaky,shall,shame,shape,shard,share,shark,sharp,shawl,shear,sheen,sheep,sheer,sheet,shelf,shell,shift,shire,shirt,shock,shoes,shone,shook,shoot,shore,shorn,short,shout,shove,shown,showy,shrub,shrug,shuck,shunt,sided,siege,sight,sigma,signs,silly,since,siren,sixth,sixty,sized,sizes,skate,skill,skimp,skull,skunk,slack,slain,slang,slant,slate,slave,sleek,sleep,sleet,slept,slice,slide,slime,slimy,sling,slink,slope,sloth,slump,slung,slunk,small,smart,smash,smear,smell,smelt,smile,smirk,smite,smith,smock,smoke,snack,snail,snake,snare,snark,sneak,sneer,snide,sniff,snore,snout,soapy,sober,solar,solid,solve,sonic,sorry,souls,south,space,spade,spare,spark,spawn,speak,spear,speck,speed,spell,spend,spent,spice,spicy,spied,spike,spill,spine,spoke,spoof,spook,spool,spoon,spore,sport,spots,spray,spree,sprig,spunk,squad,stack,staff,stage,staid,stain,stair,stake,stale,stalk,stall,stamp,stand,stank,stare,stark,start,stash,state,stave,stays,steak,steal,steam,steel,steep,steer,stems,steps,stern,stick,stiff,still,sting,stint,stock,stoic,stoke,stole,stomp,stone,stood,stool,stoop,store,stork,storm,story,stout,stove,strap,straw,stray,strep,strip,strop,stuck,study,stuff,stump,stung,stunk,stunt,style,suave,sugar,suite,sulky,sunny,super,surge,sushi,swamp,swarm,swath,swear,sweat,sweep,sweet,swept,swift,swill,swine,swing,swirl,swoop,sword,swore,sworn,swung,syrup,tabby,table,tacit,taffy,taint,taken,tales,talks,talon,tango,tapir,tardy,tasks,taste,tasty,taunt,tease,teeth,tempo,tense,tenth,terms,terse,tests,thank,theft,their,theme,there,thick,thief,thigh,thing,think,third,thorn,those,three,threw,throw,thrum,thumb,tiara,tidal,tiger,tight,tiles,times,timid,tipsy,tired,titan,title,toast,today,token,tonal,toned,tongs,tools,tooth,topaz,topic,torch,total,touch,tough,tours,towel,tower,towns,toxic,trace,track,tract,trade,trail,train,trait,tramp,trash,trawl,treat,trend,triad,trial,tribe,trick,tried,trike,trims,trips,trite,troll,troop,trope,trout,truce,truck,truly,trump,trunk,truss,trust,truth,tulip,tumor,tuned,tuner,tunic,turns,tutor,twang,tweak,tweed,twice,twill,twine,twins,twirl,twist,tying,udder,ultra,umbra,uncle,uncut,under,undid,undue,unfed,unfit,union,unite,units,unity,unlit,until,upper,upset,urban,usage,usher,using,usual,utter,vague,valid,valor,value,valve,vapor,vault,vegan,veins,venom,venue,verbs,verge,verse,vigor,villa,vinyl,viola,viper,viral,virus,visit,visor,vista,vital,vivid,vocal,vodka,vogue,voice,voila,volts,voter,vouch,vowel,vulva,wacky,waded,wager,wages,wagon,waist,walks,walls,waltz,wants,waste,watch,water,waves,waved,weary,weave,wedge,weeds,weigh,weird,wells,wheat,wheel,where,which,while,whiff,whine,whirl,whisk,white,whole,whose,widen,wider,width,wield,wines,wings,wiped,wired,wires,witch,women,words,works,world,wormy,worry,worse,worst,worth,would,wound,wrath,wreak,wreck,wring,wrist,write,wrong,wrote,yacht,years,yield,young,yours,youth,zebra,zones";
+const ANSWERS_EN = "aback,abase,abate,abbey,abbot,abhor,abide,abled,abode,abort,about,above,abuse,abyss,acids,acorn,acres,acted,actor,acute,adage,added,adept,admin,admit,adobe,adopt,adore,adorn,adult,aegis,afoot,after,again,agent,agile,aging,aglow,agony,agree,ahead,aided,aimed,aisle,alarm,album,alert,algae,alibi,alien,align,alike,alive,allay,alley,allot,allow,alloy,aloft,alone,along,aloof,alpha,altar,alter,amaze,amber,amble,amend,amine,amino,amiss,among,ample,amuse,angel,anger,angle,angry,angst,anime,ankle,annex,antic,anvil,aorta,apart,apple,apply,apron,aptly,arbor,arena,argue,arise,armor,aroma,arose,array,arrow,arson,artsy,ascot,ashen,aside,asset,atlas,atone,attic,audio,audit,augur,aunts,avail,avert,avian,avoid,await,awake,award,aware,awful,awoke,axial,axiom,azure,bacon,badge,badly,bagel,baker,balls,banal,bands,banjo,banks,baron,bases,basic,basin,basis,batch,bathe,baton,beard,beast,beech,began,begin,begun,being,bells,belly,below,bench,berry,bikes,billy,birds,birth,black,blade,blame,bland,blank,blast,blaze,bleak,bleat,bleed,blend,bless,blimp,blind,blini,blink,bliss,blitz,bloat,block,bloke,blond,blood,bloom,blown,blues,bluff,blunt,blurb,blurt,blush,board,boast,boats,bolts,bombs,bonds,bones,bonus,books,booth,boots,booty,borax,borne,bosom,bossy,bound,brace,braid,brain,brake,brand,brash,brass,brave,brawn,bread,break,breed,brick,bride,brief,bring,brink,briny,brisk,broad,broil,broke,brood,brook,broth,brown,brush,brute,buddy,budge,buggy,build,built,bulge,bulky,bully,bunch,bunny,burly,burnt,burst,buyer,cabin,cable,cache,cadet,camel,cameo,canal,candy,carat,cards,cargo,carol,carry,carve,catch,cater,cause,cedar,cells,chain,chair,chalk,champ,chant,chaos,charm,chart,chase,cheap,cheat,check,cheek,cheer,chess,chest,chick,chief,child,chili,chill,china,chips,choir,chord,chore,chose,chunk,churn,cider,cigar,cinch,circa,civic,civil,claim,clamp,clang,clank,clash,clasp,class,clean,clear,clerk,click,cliff,climb,cling,clips,cloak,clock,clone,close,cloth,cloud,clout,clown,clubs,cluck,clued,clump,clung,coach,coast,cobra,cocoa,coils,coins,colon,color,comet,comic,comma,conch,coral,corps,costs,couch,could,count,coupe,court,cover,covet,crack,craft,cramp,crane,crash,crass,crate,crave,crawl,craze,crazy,creak,cream,creed,creek,creep,crest,crews,crick,cried,crime,crisp,croak,cross,crowd,crown,crude,cruel,crush,crust,cubic,curry,curse,curve,cyber,cycle,dairy,daily,dance,dated,datum,deals,dealt,death,debit,debug,debut,decal,decay,decks,decor,decoy,decry,deity,delay,delta,delve,demon,denim,dense,depot,depth,derby,desks,deter,detox,deuce,devil,diary,digit,dilly,dimly,diner,dingy,dirty,disco,ditch,ditto,ditty,diver,dizzy,dodge,dolls,donor,donut,doubt,dough,downs,dozen,draft,drain,drake,drama,drank,drape,drawn,dread,dream,dress,dried,drift,drill,drink,drive,droit,droll,drone,drool,droop,drops,dross,drove,drown,drums,drunk,dryer,ducal,duels,dummy,dunce,dunes,dwarf,dwell,dying,eager,eagle,early,earth,eased,easel,eaten,eater,ebony,edged,edict,eight,elbow,elder,elect,elite,elude,email,ember,emcee,emoji,empty,ended,enemy,enjoy,ennui,enter,entry,envoy,epoch,equal,equip,erase,erode,error,erupt,essay,ether,ethic,evade,event,every,evict,evoke,exact,exalt,exams,excel,exert,exile,exist,expat,expel,extra,exude,exult,fable,facet,facts,faint,fairy,faith,falls,false,fancy,fangs,farce,fatal,fatty,fault,fauna,favor,feast,feats,fence,ferry,fetal,fetch,fetid,fever,fewer,fiber,fibre,fifth,fifty,fight,filth,final,finch,fired,first,flags,flair,flake,flame,flank,flaps,flare,flash,flask,fleet,flesh,flies,fling,flint,float,flock,flood,floor,flora,floss,flour,flown,fluid,fluke,flung,flush,flute,focal,focus,foggy,folly,fonts,force,forge,forms,forth,forty,forum,found,foxes,foyer,frame,frank,fraud,freak,freed,fresh,friar,fried,frill,frisk,front,frost,froze,fruit,fully,fungi,funny,furry,fuzzy,gaffe,gains,gamma,gases,gauge,gaunt,gauze,gavel,gazer,gears,genes,genre,ghost,giant,gifts,given,giver,gland,glare,glass,glaze,gleam,glide,glint,globe,gloom,glory,gloss,glove,glyph,gnome,goals,godly,going,goods,goose,gorge,grace,grade,graft,grain,grand,grant,grape,graph,grasp,grass,grate,grave,gravy,great,greed,green,greet,grief,grill,grime,grind,gripe,groan,groom,grope,gross,group,grove,grown,guard,guava,guess,guest,guide,guild,guilt,guise,gulch,gummy,gusto,gusty,gypsy,habit,hairy,hands,handy,happy,harsh,haunt,haven,hazel,heads,heard,heart,heavy,hedge,heels,hefty,heirs,hello,herbs,heron,hills,hinge,hippo,hired,hobby,hoist,holds,holes,holly,homes,honey,honor,hooks,hoped,horns,horse,hosts,hotel,hours,house,hover,human,humid,humor,hurry,hydro,hyena,hyper,ideal,idiom,idiot,image,imply,inane,incur,index,indie,inept,inert,infer,ingot,inner,input,irony,islet,issue,ivory,jaunt,jelly,jewel,jiffy,jimmy,joker,jolly,joust,judge,juice,juicy,jumbo,jumpy,juror,kayak,kebab,keeps,kicks,knack,knead,kneel,knelt,knife,knobs,knock,knoll,knots,known,label,labor,laced,laden,lance,lands,lanes,lapse,large,laser,latch,later,lathe,latte,laugh,layer,leads,leaky,leapt,learn,lease,least,leave,ledge,legal,lemon,level,lever,light,liked,liken,lilac,limbs,limit,linen,liner,lines,lingo,links,lions,lists,liter,lived,liver,livid,llama,loads,loans,lobby,local,locks,locus,lodge,lofty,logic,login,looks,loose,lorry,lossy,lousy,lover,lower,lowly,loyal,lucid,lucky,lumen,lumps,lunar,lunch,lunge,lusty,lyric,macaw,macho,macro,magic,major,maker,manor,maple,march,marks,marsh,masks,match,mayor,mealy,means,media,medal,melee,melon,mercy,merge,merit,merry,messy,metal,meter,midst,might,mills,mimic,minds,miner,minor,minus,mirth,miser,misty,mixed,mixer,mocha,model,moist,moldy,money,monks,month,moody,moral,morph,mossy,motel,moths,motor,motto,mound,mount,mourn,mouse,mouth,moved,mover,movie,mucky,mucus,muddy,mulch,mural,murky,mushy,music,musty,muted,myths,naive,named,nanny,nasal,nasty,naval,needs,nerve,never,newly,niche,night,nimby,ninja,noble,nobly,noise,noisy,nomad,norms,north,notch,noted,notes,novel,nudge,nurse,occur,ocean,octet,often,olive,omega,onion,onset,opera,opted,optic,orbit,order,organ,other,ought,ounce,outer,outdo,overt,owner,oxide,ozone,paced,packs,pages,pains,paint,pairs,panda,panel,panic,pants,paper,parks,parts,party,pasta,paste,patch,patio,pause,peach,pearl,pedal,penny,peril,perky,pesto,petal,phase,phone,photo,piano,picks,piece,piggy,pilot,pinch,pixel,pixie,pizza,place,plaid,plain,plane,plank,plans,plant,plate,plaza,plead,pleat,plier,plods,plots,pluck,plugs,plumb,plume,plump,plums,plunk,plush,poems,poets,point,poise,poker,polar,polls,polyp,poppy,porch,posed,poser,posts,pouch,pound,power,prank,prawn,press,price,pride,prime,print,prior,privy,prize,probe,prone,prong,proof,prose,proud,prove,proxy,prude,prune,psalm,pubic,pudgy,pulse,punch,pupil,purge,purse,pushy,quest,queue,quick,quiet,quill,quirk,quota,quote,rabbi,radar,radio,rainy,raise,rally,ramen,ranch,range,rapid,rated,ratio,raven,reach,react,reads,ready,realm,rebel,rebus,recap,recon,refer,reign,relax,relay,relic,remit,renal,renew,repay,repel,reply,resin,rests,retro,retry,reuse,revel,rigor,rings,rinse,risen,risky,rival,river,rivet,roads,roast,robin,robot,rocky,rogue,roots,roses,rotor,rouge,rough,round,route,rover,rowdy,royal,ruins,ruled,ruler,rules,rumor,rural,rusty,sadly,saint,salad,sales,salon,salty,salve,salvo,sandy,satin,sauce,sauna,savor,scale,scalp,scald,scams,scamp,scant,scare,scarf,scary,scene,scent,scoff,scold,scone,scoop,scope,score,scorn,scout,scowl,scram,scrap,scree,screw,scrub,sedan,seize,sense,sepia,serve,setup,seven,sever,shade,shaft,shake,shaky,shall,shame,shape,shard,share,shark,sharp,shawl,shear,sheen,sheep,sheer,sheet,shelf,shell,shift,shire,shirt,shock,shoes,shone,shook,shoot,shore,shorn,short,shout,shove,shown,showy,shrub,shrug,shuck,shunt,sided,siege,sight,sigma,signs,silly,since,siren,sixth,sixty,sized,sizes,skate,skill,skimp,skull,skunk,slack,slain,slang,slant,slate,slave,sleek,sleep,sleet,slept,slice,slide,slime,slimy,sling,slink,slope,sloth,slump,slung,slunk,small,smart,smash,smear,smell,smelt,smile,smirk,smite,smith,smock,smoke,snack,snail,snake,snare,snark,sneak,sneer,snide,sniff,snore,snout,soapy,sober,solar,solid,solve,sonic,sorry,souls,south,space,spade,spare,spark,spawn,speak,spear,speck,speed,spell,spend,spent,spice,spicy,spied,spike,spill,spine,spoke,spoof,spook,spool,spoon,spore,sport,spots,spray,spree,sprig,spunk,squad,stack,staff,stage,staid,stain,stair,stake,stale,stalk,stall,stamp,stand,stank,stare,stark,start,stash,state,stave,stays,steak,steal,steam,steel,steep,steer,stems,steps,stern,stick,stiff,still,sting,stint,stock,stoic,stoke,stole,stomp,stone,stood,stool,stoop,store,stork,storm,story,stout,stove,strap,straw,stray,strep,strip,strop,stuck,study,stuff,stump,stung,stunk,stunt,style,suave,sugar,suite,sulky,sunny,super,surge,sushi,swamp,swarm,swath,swear,sweat,sweep,sweet,swept,swift,swill,swine,swing,swirl,swoop,sword,swore,sworn,swung,syrup,tabby,table,tacit,taffy,taint,taken,tales,talks,talon,tango,tapir,tardy,tasks,taste,tasty,taunt,tease,teeth,tempo,tense,tenth,terms,terse,tests,thank,theft,their,theme,there,thick,thief,thigh,thing,think,third,thorn,those,three,threw,throw,thrum,thumb,tiara,tidal,tiger,tight,tiles,times,timid,tipsy,tired,titan,title,toast,today,token,tonal,toned,tongs,tools,tooth,topaz,topic,torch,total,touch,tough,tours,towel,tower,towns,toxic,trace,track,tract,trade,trail,train,trait,tramp,trash,trawl,treat,trend,triad,trial,tribe,trick,tried,trike,trims,trips,trite,troll,troop,trope,trout,truce,truck,truly,trump,trunk,truss,trust,truth,tulip,tumor,tuned,tuner,tunic,turns,tutor,twang,tweak,tweed,twice,twill,twine,twins,twirl,twist,tying,udder,ultra,umbra,uncle,uncut,under,undid,undue,unfed,unfit,union,unite,units,unity,unlit,until,upper,upset,urban,usage,usher,using,usual,utter,vague,valid,valor,value,valve,vapor,vault,vegan,veins,venom,venue,verbs,verge,verse,vigor,villa,vinyl,viola,viper,viral,virus,visit,visor,vista,vital,vivid,vocal,vodka,vogue,voice,voila,volts,voter,vouch,vowel,vulva,wacky,waded,wager,wages,wagon,waist,walks,walls,waltz,wants,waste,watch,water,waves,waved,weary,weave,wedge,weeds,weigh,weird,wells,wheat,wheel,where,which,while,whiff,whine,whirl,whisk,white,whole,whose,widen,wider,width,wield,wines,wings,wiped,wired,wires,witch,women,words,works,world,wormy,worry,worse,worst,worth,would,wound,wrath,wreak,wreck,wring,wrist,write,wrong,wrote,yacht,years,yield,young,yours,youth,zebra,zones";
 
-const VALID_RAW = "aalii,aargh,abaca,abaci,abaft,abase,abash,abate,abbey,abbot,abeam,abets,abhor,abide,abler,abode,abort,about,above,abuse,abuts,abysm,abyss,acais,acari,acids,acidy,acing,ackee,acmes,acned,acnes,acock,acold,acorn,acres,acrid,acted,actin,actor,acute,adage,adapt,added,adder,addle,adeem,adept,adieu,adios,adits,adman,admen,admin,admit,admix,adobe,adopt,adore,adorn,adult,adust,adzes,aegis,aeons,aerie,affix,afire,afoot,afore,afoul,after,again,agape,agate,agave,agent,agers,agger,aggie,aging,agios,agism,agist,agita,aglet,agley,aglow,agmas,agone,agons,agony,agora,agree,agria,ahead,ahold,aided,aider,aides,aigas,ailed,aimed,aimer,aioli,aired,airer,airns,airth,aisle,aitch,aiver,ajuga,akees,akela,alack,alamo,aland,alane,alang,alans,alarm,alary,alate,album,alcid,alder,alert,algae,algal,algas,algid,algor,alias,alibi,alien,align,alike,aline,alive,allay,alley,allot,allow,alloy,allyl,almeh,almes,almud,aloes,aloft,alone,along,aloof,aloud,alpha,altar,alter,altho,altos,alula,alums,amain,amass,amaze,amber,ambit,amble,ambos,ambry,ameba,ameer,amend,ament,amias,amice,amide,amido,amids,amies,amine,amino,amins,amirs,amiss,amity,ammos,amnia,amnic,amnio,amoks,among,amour,amped,ample,amply,amuck,amuse,amyls,ancho,angel,anger,angle,angry,angst,anile,anime,anion,anise,anker,ankhs,ankle,anlas,annal,annas,annex,annoy,anoas,anode,anole,antic,antis,antsy,anvil,aorta,apart,apeak,apers,apery,aphid,aphis,apian,aping,apish,apnea,apods,aport,apple,apply,apron,apses,apsis,aptly,aquae,aquas,arbor,arced,ardeb,ardor,areae,areal,areas,areca,arena,argal,argil,argle,argon,argos,argue,argus,arhat,arias,ariel,arils,arise,arles,armed,armer,armor,aroid,aroma,arose,array,arrow,arses,arsis,arson,artsy,arums,arvos,ascot,ashen,ashes,aside,asked,asker,aspen,asper,asset,atlas,atman,atoll,atoms,atone,atony,attic,audio,audit,auger,aught,augur,aunts,aunty,aural,aurar,auras,aurei,aures,auric,auris,autos,avail,avast,avens,avert,avian,avids,avion,aviso,avoid,avows,await,awake,award,aware,awash,awful,awing,awned,awoke,axial,axile,axils,axing,axiom,axion,axled,axles,axman,axmen,axone,axons,ayahs,azure,baals,babas,babel,babes,babka,baboo,babul,babus,backs,bacon,badge,badly,bagel,baggy,bahts,bairn,baits,baize,baked,baker,bakes,balas,balds,baled,baler,bales,balks,balky,balls,bally,balms,balmy,banal,bands,bandy,banes,bangs,banjo,banks,barbs,bards,bared,barer,bares,barfs,barge,barks,barmy,barns,baron,barps,barre,basal,based,baser,bases,basic,basil,basin,basis,basks,baste,basts,batch,bated,bates,bathe,baths,batik,baton,batts,batty,bauds,baulk,bawds,bawdy,bawls,bayed,bayou,beach,beads,beady,beaks,beams,beamy,beans,beard,bears,beast,beats,beaus,beaut,beaux,bebop,becks,bedew,bedim,beech,beedi,beefs,beefy,beeps,beers,beery,beets,began,beget,begin,begot,begun,being,belay,belch,belie,belle,bells,belly,below,belts,bench,bends,bendy,benes,benne,benny,bents,bergs,berks,berms,berry,berth,beryl,beset,besot,bests,betas,betel,beths,bevel,bezel,bhaji,bikes,biles,bilge,bills,billy,binal,binds,bingo,biome,biont,biota,biped,birch,birds,birls,birth,bison,bites,bitsy,bitts,bitty,black,blade,blame,bland,blank,blare,blase,blast,blats,blaze,bleak,blear,bleat,bleed,blend,bless,blimp,blind,blini,blink,blips,bliss,blitz,bloat,blobs,block,blocs,blogs,bloke,blond,blood,bloom,blown,blows,blowy,blubs,blues,bluey,bluff,blunt,blurb,blurs,blurt,blush,board,boars,boast,boats,bobby,boded,bodes,bodge,bogey,boggy,bogie,bogus,boils,bolar,bolas,bolls,bolts,bolus,bombs,bonds,boned,boner,bones,boney,bongo,bongs,bonks,bonne,bonny,bonus,boobs,booby,books,booms,boomy,boons,boors,boost,boots,booty,booze,boozy,borax,bored,borer,bores,borne,boron,bosom,bossy,bosun,botch,bound,bouts,bowed,bowel,bower,bowls,boxed,boxer,boxes,boyar,boyos,brace,brack,bract,brads,brags,braid,brain,brake,brand,brash,brass,brats,brave,bravo,brawn,brays,braze,bread,break,breed,breve,brews,briar,bribe,brick,bride,brief,brier,brill,brine,bring,brink,briny,brisk,broad,broil,broke,brood,brook,broth,brown,brows,brush,brute,bucks,buddy,budge,buggy,bugle,build,built,bulbs,bulge,bulky,bulla,bulls,bully,bumph,bumps,bumpy,bunch,bunco,bungs,bunks,bunny,bunts,buoys,burbs,burds,burgs,burly,burns,burnt,burps,burro,burrs,burst,busby,bused,buses,bushy,busts,busty,buyer,bwana,bylaw,bytes,cabal,cabby,cabin,cable,cacao,cache,cacti,caddy,cadet,cadge,caeca,cafes,caged,cager,cages,cagey,cairn,caked,cakes,calif,calks,calls,calms,camel,cameo,camps,campy,canal,candy,caned,caner,canes,canid,canna,canny,canoe,canon,canst,canto,caper,capes,capon,carat,carbo,cards,cared,carer,cares,cargo,carks,carls,carol,carry,carts,carve,cased,cases,casks,caste,casts,catch,cater,caves,cavil,cedar,ceded,cedes,cells,celts,cents,chafe,chaff,chain,chair,chalk,champ,chant,chaos,chaps,chard,charm,chars,chart,chase,cheap,cheat,check,cheek,cheer,chess,chest,chews,chewy,chick,chide,chief,child,chili,chill,chime,china,chink,chips,chirp,chive,choir,choke,chomp,chops,chord,chore,chose,chuck,chuff,chugs,chump,chunk,churn,chute,cider,cigar,cinch,circa,cited,cites,civet,civic,civil,clack,clads,claim,clamp,clams,clang,clank,clans,claps,clash,clasp,class,claws,clays,clean,clear,cleat,cleft,clerk,click,cliff,climb,cling,clink,clips,cloak,clock,clods,clogs,clone,clops,close,cloth,clots,cloud,clout,clove,clown,clubs,cluck,clued,clues,clump,clung,clunk,coach,coals,coast,coats,cobra,cocoa,cocos,codec,coded,coder,codes,codex,codon,coeds,coils,coins,colas,colby,colds,colon,color,colts,comas,combo,combs,comer,comes,comet,comfy,comic,comma,comps,conch,condo,coned,cones,conga,conic,coops,coots,coped,coper,copes,coral,cords,cored,corer,cores,corgi,corks,corky,corns,corny,corps,costs,couch,could,count,coupe,coups,court,coven,cover,covet,covey,crack,craft,crags,cramp,crams,crane,crank,craps,crash,crass,crate,crave,crawl,craze,crazy,creak,cream,credo,creed,creek,creep,creme,crepe,crept,cress,crest,crews,crick,cried,crier,cries,crime,crimp,crisp,crits,croak,crock,croft,crone,crook,croon,crops,cross,crowd,crown,crude,cruel,cruet,crumb,crush,crust,crypt,cubed,cubes,cubic,cubit,cuddy,cuffs,culls,curbs,curds,cured,curer,cures,curls,curly,curry,curse,curve,curvy,cushy,cutie,cyber,cycle,cynic,daily,dairy,daisy,dance,dandy,dared,darer,dares,dated,dater,dates,datum,daunt,dawns,deals,dealt,dears,death,debit,debts,debug,debut,decal,decay,decks,decor,decoy,decry,deeds,deity,delay,delft,delta,delve,demon,demos,demur,denim,dense,depot,depth,derby,desks,deter,detox,deuce,devil,dials,diary,dicey,digit,dills,dilly,dimly,dinar,dined,diner,dines,dingo,dingy,diode,dirty,disco,discs,dishy,ditch,ditto,ditty,divan,dived,diver,dives,divot,dizzy,dodge,dodgy,doing,dolls,dolly,domed,domes,donor,donut,dooms,doors,doper,dopes,dopey,dosed,doses,dotty,doubt,dough,douse,doves,dowdy,dowel,downs,downy,dowry,doyen,dozed,dozen,dozer,draft,drags,drain,drake,drama,drank,drape,drawl,drawn,draws,dread,dream,dress,dried,drier,drift,drill,drink,drips,drive,droit,droll,drone,drool,droop,drops,dross,drove,drown,drugs,drums,drunk,dryer,dryly,ducat,ducks,ducky,duels,duets,duffs,dulls,dummy,dumps,dumpy,dunce,dunes,dunks,duped,duper,dupes,dusty,dutch,dwarf,dwell,dwelt,dying,eager,eagle,early,earns,earth,eased,easel,eaten,eater,eaves,ebbed,ebony,edged,edger,edges,edict,edify,eight,eject,elbow,elder,elect,elfin,elite,elope,elude,elves,email,embed,ember,emcee,emoji,emote,empty,ended,enemy,enjoy,ennui,ensue,enter,entry,envoy,epoch,epoxy,equal,equip,erase,erode,error,erupt,essay,ester,ether,ethic,ethos,evade,event,every,evict,evils,evoke,exact,exalt,exams,exalt,excel,exert,exile,exist,expat,expel,extol,extra,exude,exult,eying,fable,faced,facer,faces,facet,facts,faddy,faded,fades,fails,faint,fairy,faith,faked,faker,fakes,falls,false,famed,fancy,fangs,farce,fared,fares,farms,fatal,fatty,fault,fauna,favor,feast,feats,feeds,feels,feign,feint,felon,femur,fence,fends,feral,ferry,fetal,fetch,fetid,fetus,feuds,fever,fewer,fiber,fibre,field,fiend,fifth,fifty,fight,filch,filed,filer,files,filet,fills,filly,films,filmy,filth,final,finch,finds,fined,finer,fines,fired,fires,firms,first,fishy,fixed,fixer,fixes,fizzy,fjord,flack,flags,flair,flake,flaky,flame,flams,flank,flaps,flare,flash,flask,flats,flaws,flaxy,fleas,fleck,flees,fleet,flesh,flick,flier,flies,fling,flint,flips,flirt,float,flock,flogs,flood,floor,flora,floss,flour,flows,fluid,fluke,fluky,flung,flunk,flush,flute,foals,foams,foamy,focal,focus,fogey,foggy,foils,folds,folio,folks,folly,fonts,foods,fools,foots,foray,force,forgo,forge,forgo,forks,forms,forte,forth,forts,forty,forum,fosse,found,fount,fours,fowls,foxed,foxes,foyer,frail,frame,frank,fraud,frays,freak,freed,fresh,friar,fried,fries,frill,frisk,frizz,frock,frogs,front,frost,froth,froze,fruit,frump,fully,fumes,funds,fungi,funky,funny,furls,furry,fused,fuses,fussy,fusty,fuzzy,gaffe,gaily,gains,gaits,galas,gales,galls,games,gamma,gamut,gangs,gapes,garbs,gases,gasps,gates,gauge,gaunt,gauze,gauzy,gavel,gazer,gazes,gears,geeks,geeky,geese,genes,genie,genre,genus,germs,ghost,giant,gifts,gilds,gills,gilts,gimme,girth,gists,given,giver,gives,gizmo,gland,glare,glass,glaze,gleam,glean,glees,glens,glide,glint,globe,globs,gloom,glory,gloss,glove,glows,glued,glues,gluey,glyph,gnash,gnats,gnome,goads,goals,goats,godly,goers,going,golds,golfs,gonad,goner,gongs,gonna,goods,goody,gooey,goofs,goofy,goose,gorge,gouge,gourd,grace,grade,graft,grail,grain,grand,grant,grape,graph,grasp,grass,grate,grave,gravy,grays,graze,great,greed,greek,green,greet,grief,grill,grime,grimy,grind,grins,gripe,grips,grist,grits,groan,groat,groin,groom,grope,gross,group,grout,grove,growl,grown,grows,grubs,gruel,gruff,grump,grunt,guano,guard,guava,guess,guest,guide,guild,guilt,guise,gulch,gulls,gulps,gummy,gumps,gunky,gunny,gusto,gusty,gutsy,gypsy,habit,hacks,haiku,hails,hairs,hairy,haler,halts,halve,hands,handy,hangs,happy,hardy,harem,harms,harps,harpy,harry,harsh,haste,hasty,hatch,hated,hater,hates,hauls,haunt,haven,havoc,hawks,hazel,heads,heals,heaps,heard,heart,heats,heavy,hedge,heeds,heels,hefts,hefty,heirs,heist,helix,hello,helps,hence,herbs,herds,heron,hiker,hikes,hills,hilly,hilts,hinds,hinge,hints,hippo,hippy,hired,hires,hitch,hived,hives,hoard,hoary,hobby,hobos,hocks,hoers,hoist,holds,holed,holes,holly,holms,homes,honey,hoods,hoofs,hooks,hoops,hoped,hoper,hopes,horde,horns,horny,horse,horsy,hosed,hoses,hosts,hotel,hotly,hound,hours,house,hovel,hover,howdy,howls,hubby,huffs,huffy,huger,hulks,hulky,human,humid,humor,humps,humpy,humus,hunch,hunks,hunky,hunts,hurls,hurry,hurts,husks,husky,hydra,hydro,hyena,hymen,hymns,hyper,ichor,icier,icily,icing,icons,ideal,ideas,idiom,idiot,idled,idler,idles,idols,idyll,igloo,iliac,image,imago,imams,imbue,impel,imply,inane,incur,index,indie,inept,inert,infer,ingot,inked,inlay,inlet,inner,input,inset,inter,intro,inure,irked,irons,irony,isled,isles,islet,issue,itchy,items,ivory,ivied,ivies,jabot,jacks,jaded,jades,jaggs,jaggy,jails,jaunt,jazzy,jeans,jeeps,jelly,jenny,jerks,jerky,jests,jewel,jibed,jibes,jiffy,jiggs,jimmy,jinks,jinns,jived,jiver,jives,joans,jocks,johns,joins,joint,joked,joker,jokes,jolly,jolts,joust,joyed,judge,juice,juicy,julep,jumbo,jumps,jumpy,junco,junks,junky,juror,justs,jutes,kayak,kebab,keels,keeps,keyed,khaki,kicks,kills,kilns,kilts,kinds,kings,kinks,kinky,kiosk,kites,kithe,knack,knave,knead,kneed,kneel,knees,knelt,knife,knits,knobs,knock,knoll,knots,known,knows,knurl,koala,kudos,label,labor,laced,laces,lacks,laden,ladle,lager,lairs,lakes,lambs,lamed,lamps,lance,lands,lanes,lanky,lapel,lapse,large,larks,larva,laser,lassi,lasso,lasts,latch,later,latex,lathe,latte,laugh,layer,leads,leafy,leaks,leaky,leans,leant,leapt,learn,lease,leash,least,leave,ledge,leech,leeks,lefts,lefty,legal,leggy,lemma,lemon,lemur,lends,level,lever,light,liked,liken,likes,lilac,lilts,limbo,limbs,limed,limes,limey,limit,limns,limps,lined,linen,liner,lines,lingo,lings,links,lions,lists,liter,lithe,lived,liven,liver,lives,livid,llama,loads,loafs,loams,loamy,loans,loath,lobby,lobes,local,locks,locus,lodes,lodge,lofts,lofty,logic,login,logos,loins,looks,looms,loons,loony,loops,loopy,loose,loots,loped,loper,lopes,lords,lorry,loser,loses,lossy,lotus,lousy,louse,loved,lover,loves,lower,lowly,loyal,lucid,lucky,lulls,lumen,lumps,lumpy,lunar,lunch,lunge,lungs,lupus,lurch,lured,lurer,lures,lurks,lusty,lyric,macaw,maced,macer,maces,macho,macro,madam,madly,mafia,magic,magma,maids,mails,maims,mains,maize,major,maker,makes,males,malls,malts,malty,mamas,mamba,mambo,mamma,mammy,mango,mania,manic,manly,manor,maple,march,mares,marks,marry,marsh,masks,mason,masse,match,mated,mater,mates,matte,mauls,mauve,maxed,maxes,mayor,mazes,mealy,means,meant,meats,meaty,medal,media,medic,melee,melon,melts,memos,mends,menus,meows,mercy,merge,merit,merry,meshy,messy,metal,meted,meter,metro,micas,micro,midst,miffs,might,mills,mimed,mimer,mimes,mimic,mince,minds,mined,miner,mines,minor,mints,minty,minus,mired,mires,mirth,miser,missy,mists,misty,miter,mitre,mitts,mixed,mixer,mixes,moans,moats,mocha,mocks,modal,model,modem,modes,mogul,moist,molar,molds,moldy,moles,molls,molts,money,monks,month,moods,moody,moons,moose,moots,moped,moper,mopes,moral,morel,mores,morph,mossy,motel,moths,motif,motor,motto,mound,mount,mourn,mouse,mousy,mouth,moved,mover,moves,movie,mowed,mower,mucky,mucus,muddy,muffs,muggy,mulch,mules,mulls,mumps,munch,mural,murky,mused,muses,mushy,music,musks,musky,musty,muted,muter,mutes,mutts,myrrh,myths,nacho,naive,naked,named,namer,names,nanny,napes,nappy,nasal,nasty,natal,naval,navel,neaps,nears,necks,needs,nerds,nerdy,nerve,nervy,nests,never,newer,newly,newsy,nexus,niche,nicks,niece,night,nimby,ninja,ninth,noble,nobly,nodes,noise,noisy,nomad,nonce,nooks,norms,north,nosed,noses,nosey,notch,noted,notes,nouns,novel,nudge,nulls,numbs,nurse,nutty,nylon,nymph,oaken,oared,oases,oasis,oater,oaths,occur,ocean,ocher,ochre,octet,octet,oddly,odder,odors,offal,offer,often,ogled,ogler,ogles,ogres,oiled,oiler,okays,older,olden,olive,omega,omens,omits,onset,oohed,oomph,oozed,oozes,opals,opens,opera,opted,optic,orbit,order,organ,osier,other,ottar,otter,ought,ounce,outdo,outed,outer,outgo,ovary,ovals,ovary,ovens,overt,ovoid,ovule,owing,owned,owner,oxide,ozone,paced,pacer,paces,packs,paddy,pagan,paged,pager,pages,pails,pains,paint,pairs,paled,paler,pales,palms,palsy,pampa,panda,panel,panes,pangs,panic,pansy,pants,papal,papas,paper,parch,pared,parer,pares,parks,parts,party,pasta,paste,pasts,pasty,patch,pated,pater,patio,pause,paved,paver,paves,pawed,pawns,peach,peaks,pearl,pears,pease,peats,pecan,pecks,pedal,peeks,peels,peeps,peers,penny,peons,peppy,perch,peril,perks,perky,perms,perps,pesto,pests,petal,peter,petty,phase,phone,photo,piano,picks,picky,piece,piers,piggy,piked,piker,pikes,piled,piles,pills,pilot,pimps,pinch,pined,pines,pings,pinko,pinks,pinky,pints,pious,piped,piper,pipes,pique,pixel,pixie,pizza,place,plaid,plain,plait,plane,plank,plans,plant,plate,plats,plays,plaza,plead,pleas,pleat,plied,plier,plies,plods,plops,plots,plows,ploys,pluck,plugs,plumb,plume,plump,plums,plums,plunk,plush,plyer,poach,pocks,poems,poets,point,poise,poked,poker,pokes,polar,poled,poles,polio,polls,polyp,pomps,ponds,pools,poops,popes,poppy,popup,porch,pored,pores,porks,porky,ports,posed,poser,poses,posit,posts,potty,pouch,pound,pours,pouts,pouty,power,prams,prank,prawn,prays,press,prexy,preys,price,pricy,pride,pried,prier,pries,prime,primo,primp,prims,prink,print,prior,privy,prize,probe,prods,profs,promo,prone,prong,proof,props,prose,proud,prove,prowl,prude,prune,psalm,pubic,pucka,pucks,pudgy,puffs,puffy,puggy,puked,pukes,pulls,pulps,pulpy,pulse,pumps,punch,punks,punky,pupil,puppy,puree,purer,purge,purls,purrs,purse,pushy,putts,putty,pygmy,pylon,pyres,quack,quaff,quail,qualm,quart,quash,quasi,queen,queer,quell,query,quest,queue,quick,quiet,quill,quilt,quips,quirk,quota,quote,quoth,rabbi,rabid,raced,racer,races,racks,radar,radii,radio,radon,rafts,raged,rages,raids,rails,rainy,raise,rajah,raked,raker,rakes,rally,ramen,ramps,ranch,range,rangy,ranks,rants,rapid,rared,rarer,rares,rasps,raspy,rated,rater,rates,ratio,ratty,raved,raven,raves,rayon,razed,razer,razes,razor,reach,react,reads,ready,realm,reals,reams,reaps,rears,rebel,rebus,recap,recon,recur,redid,redly,reeds,reedy,reefs,reeks,reedy,reels,refer,refit,regal,rehab,reign,reins,relax,relay,relic,remit,renal,renew,rents,repay,repel,reply,repot,reran,rerun,reset,resin,rests,retch,retro,retry,reuse,revel,revel,ricer,rices,rider,rides,ridge,rifle,right,rigid,rigor,riled,rills,rinds,rings,rinse,riots,ripen,riper,risen,riser,rises,risks,risky,rites,ritzy,rival,riven,river,rivet,roads,roams,roars,roast,robed,robes,robin,robot,rocks,rocky,rodeo,rogue,roles,rolls,roman,romps,roods,roofs,rooks,rooms,roomy,roots,roost,roped,roper,ropes,roses,rosin,rotor,rouge,rough,round,rouse,route,rover,roves,rowdy,rowed,rower,royal,rugby,ruins,ruled,ruler,rules,rumba,rumor,rumps,runes,rungs,runny,runts,rural,rusts,rusty,sadly,safes,safer,sages,sahib,sails,saint,sakes,salad,sales,salon,salsa,salts,salty,salve,salvo,samba,sands,sandy,saner,satin,satyr,sauce,saucy,sauna,saute,saved,saver,saves,savor,savoy,savvy,sawed,scale,scalp,scald,scams,scamp,scams,scant,scare,scarf,scary,scene,scent,schmo,scoff,scold,scone,scoop,scope,score,scorn,scout,scowl,scram,scrap,scree,screw,scrub,scrum,sculk,sedan,seeds,seedy,seeks,seems,seeps,seize,sense,sepia,serif,serve,setup,seven,sever,sewer,shade,shady,shaft,shake,shaky,shall,shame,shams,shape,shard,share,shark,sharp,shave,shawl,shear,sheds,sheen,sheep,sheer,sheet,shelf,shell,shied,shift,shims,shine,shiny,shire,shirt,shock,shoes,shone,shook,shoot,shops,shore,shorn,short,shout,shove,shown,shows,showy,shrew,shrub,shrug,shuck,shuns,shunt,shush,sided,sides,siege,sieve,sighs,sight,sigma,signs,silks,silky,sills,silly,silts,since,singe,sinks,siren,sires,sissy,sited,sites,sixth,sixty,sized,sizes,skate,skein,skied,skier,skies,skill,skimp,skims,skins,skips,skirt,skull,skunk,slabs,slack,slags,slain,slake,slams,slang,slant,slaps,slash,slate,slats,slave,slays,sleds,sleek,sleep,sleet,slept,slice,slick,slide,slime,slimy,sling,slink,slips,slope,slops,slosh,sloth,slots,slows,slugs,slump,slums,slung,slunk,slurp,slurs,small,smart,smash,smear,smell,smelt,smile,smirk,smite,smith,smock,smoke,smoky,smote,snack,snafu,snags,snail,snake,snaky,snaps,snare,snark,snarl,sneak,sneer,snide,sniff,snips,snobs,snoop,snore,snort,snout,snows,snowy,snubs,snuck,snuff,soapy,soars,sober,socks,soggy,soils,solar,soled,soles,solid,solos,solve,sonic,sonny,sooty,sorry,sorts,souls,sound,soups,soupy,south,sowed,space,spade,spank,spans,spare,spark,spars,spasm,spate,spawn,speak,spear,speck,specs,speed,spell,spend,spent,spice,spicy,spied,spiel,spier,spies,spike,spiky,spill,spine,spins,spiny,spoke,spoof,spook,spool,spoon,spore,sport,spots,spout,spray,spree,sprig,spuds,spunk,spurn,spurs,spurt,squad,squab,squat,squid,stack,staff,stage,stags,staid,stain,stair,stake,stale,stalk,stall,stamp,stand,stank,stare,stark,stars,start,stash,state,stave,stays,steak,steal,steam,steel,steep,steer,stems,steps,stern,stews,stick,stiff,still,stilt,sting,stint,stirs,stock,stoic,stoke,stole,stomp,stone,stony,stood,stool,stoop,stops,store,stork,storm,story,stout,stove,stows,strap,straw,stray,strep,strip,strop,strum,strut,stuck,studs,study,stuff,stump,stung,stunk,stunt,style,suave,suede,sugar,suite,suits,sulks,sulky,sunny,super,surge,sushi,swabs,swamp,swang,swank,swans,swaps,swarm,swath,swats,swear,sweat,sweep,sweet,swell,swept,swift,swigs,swill,swine,swing,swipe,swirl,swish,swoon,swoop,sword,swore,sworn,swung,syrup,tabby,table,tacit,tacks,tacky,taffy,tails,taint,taken,taker,takes,tales,talks,tally,talon,tamed,tamer,tames,tango,tangs,tangy,tanks,taped,taper,tapes,tardy,tarps,tasks,taste,tasty,tatty,taunt,taupe,tawny,taxed,taxes,teach,tears,teary,tease,techs,teddy,teeth,tempo,temps,tench,tends,tense,tenth,tents,tepee,tepid,terms,terns,terse,tests,texts,thank,theft,their,theme,there,these,thick,thief,thigh,thing,think,third,thong,thorn,those,three,threw,throw,thrum,thuds,thugs,thumb,thump,tiara,tidal,tides,tiers,tiger,tight,tiled,tiles,tilts,timed,timer,times,timid,tippy,tipsy,tired,titan,tithe,title,toast,today,toddy,token,tolls,tombs,tonal,toned,toner,tones,tongs,tonne,tools,tooth,topaz,topic,torch,torso,total,totem,touch,tough,tours,towed,towel,tower,towns,toxic,trace,track,tract,trade,trail,train,trait,tramp,traps,trash,trawl,trays,tread,treat,treed,trees,trend,triad,trial,tribe,trick,tried,tries,trike,trill,trims,trips,trite,troll,tromp,troop,trope,troth,trots,trout,trove,truce,truck,trued,truer,trues,truly,trump,trunk,truss,trust,truth,tryst,tubal,tubas,tubby,tubed,tuber,tubes,tucks,tuffs,tufts,tulip,tumid,tumor,tunas,tuned,tuner,tunes,tunic,turns,tusks,tutor,twain,twang,tweak,tweed,tweet,twice,twigs,twill,twine,twins,twirl,twist,tying,typed,types,typos,udder,ulcer,ultra,umbra,umped,uncle,uncut,under,undid,undue,unfed,unfit,unify,union,unite,units,unity,unlit,unmet,unsay,untie,until,unwed,unzip,upper,upset,urban,ureas,urged,urges,urine,usage,usher,using,usual,usurp,utile,utter,uvula,vague,valet,valid,valor,value,valve,vamps,vanes,vanir,vapid,vapor,vases,vault,vegan,veils,veins,veiny,veldt,venom,vents,venue,verbs,verge,verse,vibes,vicar,video,views,vigil,vigor,villa,vinca,vines,vinyl,viola,viper,viral,virus,visor,visit,vista,vitas,vital,vivid,vivre,vixen,vocal,vodka,vogue,voice,voila,volts,vomit,voter,votes,vouch,vowed,vowel,vulva,wacky,waded,wader,wades,waged,wager,wages,wagon,waifs,wails,waist,waits,waked,waken,wakes,walks,walls,waltz,wands,waned,wanes,wants,wards,wares,warns,warps,warts,warty,waste,watch,water,watts,waved,waver,waves,waxed,waxes,weals,weans,wears,weary,weave,webby,wedge,weeds,weedy,weeks,weeny,weigh,weird,wells,wench,wheat,wheel,where,which,while,whiff,whims,whine,whiny,whips,whirl,whisk,white,whits,whizz,whole,whose,wicks,widen,wider,width,wield,wifty,wilds,wiled,wiles,wills,willy,wilts,wimps,wimpy,wince,winch,winds,windy,wined,wines,wings,winks,wiped,wiper,wipes,wired,wires,wised,wiser,wisps,wispy,witch,witty,woken,woman,women,wonks,wonky,woods,woody,words,wordy,works,world,worms,wormy,worry,worse,worst,worth,would,wound,woven,wrack,wrath,wreak,wreck,wrest,wring,wrist,write,wrong,wrote,yacht,yanks,yards,yarns,yeahs,yearn,years,yeast,yells,yield,yikes,yodel,yoked,yokes,young,yours,youth,yucca,zebra,zeros,zesty,zilch,zincs,zonal,zones";
+const ANSWERS_ES = "acero,acido,actor,adobe,agrio,aguja,ajena,ajeno,alado,album,aldea,aleta,alfil,algas,alien,alma,altar,amado,amiga,amigo,ancho,angel,anima,anime,antes,antro,anzar,apodo,apoyo,arbol,arena,arido,armas,aroma,artes,asilo,ataud,atlas,atomo,audio,avion,ayuda,azote,aztec,bahia,baile,balsa,banca,banco,banda,bañar,baño,barra,barro,basta,bello,bicho,bien,bingo,bisno,blusa,bobos,bocas,bolas,bolsa,bomba,bonos,borde,brasa,brazo,breve,brisa,brote,brujo,bruma,buceo,bueno,bufon,buque,burla,busca,buzon,cabal,cable,cabra,cacao,cacho,caldo,calma,calor,calvo,camas,campo,canal,canto,capas,capaz,cardo,carga,carne,carta,casal,casco,cauce,causa,ceder,celda,celos,cenar,cenit,cerdo,ceros,chale,charla,chica,chico,chile,chino,chivo,choza,cifra,cinco,circo,citas,civil,clave,clima,cloro,cobro,coger,cohes,cojer,colon,color,comba,combo,comic,compra,conde,coral,corte,coser,costa,crema,cruel,crudo,cuado,cuato,cubos,cubre,cuero,cueva,culpa,culto,cuñas,cuota,curar,damas,dañar,danza,datos,deber,decir,dejar,deliz,delta,denso,deseo,deuda,dicha,dicho,diente,disco,diosa,dobla,dolor,donde,donar,droga,dueña,dueño,dulce,dunas,duque,durar,duros,eco,email,emoji,enero,enojo,envio,envol,epoca,error,escal,espia,estar,etapa,exito,extra,falla,falsa,falso,faltar,famas,fango,farsa,fatal,fauna,favor,fecha,feliz,feria,fibra,ficha,fideo,fiera,fijo,final,finca,firma,fisco,flaco,flora,flujo,fondo,forma,forro,foton,frase,freno,fresa,fruta,fuego,fuera,fuero,fuga,funda,fusil,galan,gallo,gamba,ganar,ganga,garza,gasto,gatas,genio,gente,gesto,globo,golfo,golpe,gorra,gozar,grasa,grato,grito,grupo,guapo,guias,guion,guiso,gusta,gusto,habla,hacer,hacia,halar,hampa,harto,hasta,hecho,hielo,hiena,hierba,higos,hilar,himen,himno,hogar,honor,hueso,humor,humus,hurto,ibero,ideal,igual,ileso,iname,indio,infra,ingre,injur,inicio,irles,ironía,islas,jabon,jamas,jaula,jefas,jefes,joven,juego,jugar,jugos,julio,junta,jurar,justo,labio,labor,lacra,ladrón,lago,lamer,lance,largo,laser,latin,latir,laudo,lavas,lavar,leche,lecho,legal,lejos,lento,leña,letra,leyes,libre,licor,lidia,ligar,limon,limón,linea,litio,llama,llano,llave,llena,lleno,lleva,lobar,local,logro,lomas,lucir,lugar,lujos,lunar,lusco,macho,macro,madre,mafia,magia,maíz,malla,mambo,mando,manga,manos,manto,marca,marco,marea,matar,mayas,mayor,media,medio,mejor,melon,menos,mente,menus,merco,meses,metal,metro,micro,miedo,miles,minas,mirar,misil,mitad,mixto,modas,mojar,moler,monja,monte,moral,morir,morro,mosca,motel,motor,mover,moños,mucho,muela,mujer,mulas,multa,mundo,mural,muros,musas,musgo,muslo,nacer,nacio,nadar,nadie,nandu,nariz,natal,naves,necio,negro,nenes,nicho,nidos,nieta,nieto,ninfa,niñas,niños,nivel,noble,noche,norma,norte,notas,nubla,nubes,nudos,nuera,nuevo,nuñez,obeso,ocean,ocaso,ocios,odiar,ofert,ojo,oleaj,oliva,ondas,opera,optar,orden,orejas,orina,otros,pacto,padre,pagas,pagar,pajes,panda,panel,papel,parar,parco,pared,parke,parte,pasar,pasta,pasto,patas,patio,patos,pausa,pauta,pecho,pedal,pedir,pegaj,peine,pelea,penas,peñas,perla,perno,perro,pesas,pesca,piano,picar,piden,pieza,pilas,pilon,pinta,piñas,piras,pista,pitas,placa,plaga,plana,plano,plata,plato,playa,plaza,pleno,plomo,pluma,poder,podio,polar,polvo,poner,porte,posar,poste,prado,prima,primo,prisa,proa,prueb,pudin,pulir,pulpo,pulso,punto,puñal,puñas,puño,puros,queja,quema,quien,ramas,rampa,rango,rapaz,rapto,raras,rasgó,ratos,raudo,rayar,razas,razon,recto,redes,refan,regio,regla,reina,reino,rejas,reloj,reluz,remar,remos,renal,rengo,renta,repas,resto,retar,reyes,rezar,rigor,rimas,rinco,riñas,riñon,ritos,rival,robot,rocas,ronda,ronco,ropas,roque,rosas,rubio,rueda,rugir,ruido,rumba,rumbo,rumor,ruñir,rural,rutas,saber,sabio,sabor,sacar,salir,salon,salsa,salto,salud,samba,santa,santo,sapos,selva,señal,señor,seria,serie,siglo,signo,silba,silla,sirve,sitio,solar,soler,sonar,soplo,sordo,sudor,suelo,sueño,sufre,sumar,super,surco,susto,tabas,tacon,tacos,talon,tango,tanqu,tapas,tardo,tarea,tarro,tasar,tecla,tejer,telas,telón,temas,temer,temor,terco,tesis,tiara,tifon,tigre,timar,timón,tinta,tinto,tipos,tirar,titan,tocar,toldo,tomar,tonal,tonto,torpe,torre,total,toxico,traer,trago,trama,tramo,trece,trigo,tripa,trofe,trono,tropa,trozo,trust,tumba,tumor,tunel,turba,turno,tutor,ultra,union,unico,untar,urbem,vacan,valer,vapor,vario,varon,vasco,vasto,veces,velar,vello,venas,venir,venta,verde,verso,vibra,viejo,vigor,viral,virus,vivir,vocal,volar,votar,vuelo,yegua,zarpa,zonas";
+
+const VALID_ES = "abaco,abajo,abeja,abobo,abono,abrir,abril,acaso,acato,acera,acodo,acoge,acoso,acres,actas,actos,acuña,adios,adoro,afear,afilo,agave,agita,agota,agudo,agüas,ahora,ahuma,aires,aísla,alamo,alano,alara,alaro,albas,alces,alcoa,alero,alfar,aliño,aliso,aloha,aloja,alude,aluma,amaba,amago,amara,amaro,ambas,ambos,ameba,amena,ameno,amino,amplo,ancla,andar,andes,añada,añejo,anela,anida,anota,ansia,arado,arañ,araña,arcos,ardor,argan,aries,armar,arnes,arroz,asado,asear,aseos,asier,asoma,astas,ataca,atajo,atara,atiza,audio,aunar,auras,autor,avena,aviso,ayer,bacas,bache,bagre,bajas,balde,balon,bambu,barba,baron,basta,basto,batas,bazar,becas,bebes,belga,berma,besar,besos,biblia,bidet,biela,bilbo,birra,bison,bites,bitar,bolas,bolos,bondi,bonus,borde,borla,borna,botas,botes,bovil,boxeo,bravo,brida,bucle,buena,bufet,buhos,bulas,bulbo,burdo,burro,cabal,cabin,cabot,cabos,cacto,caigo,cajas,cajon,calas,caliz,camas,camea,capaz,capos,caras,cargo,cario,casos,casta,cavar,cazas,cazos,cebra,cedro,cejas,cenas,ceños,cepas,cerca,cerro,ciclo,ciega,ciego,cines,cinta,cipre,cisne,citas,claro,clavo,cobos,cobra,coces,coche,codos,cofre,coger,cojos,colas,colmo,comes,comod,coñac,copia,copla,coras,corba,cores,corro,corta,corvo,costo,cotas,coxis,crece,creer,crias,cruce,cuajo,cuban,cubas,cubre,cucho,cucña,cucos,cuida,cuñal,cunas,curas,dable,dagan,danes,dardo,daros,debas,debil,dedal,dedos,delta,demás,depor,desai,desea,diada,diana,dieta,digno,dimas,diodo,dique,disco,doble,dogma,dolce,domar,dosel,dotar,dotes,drena,ducal,dudar,dulce,duras,ebano,edita,ejido,eleva,elite,email,emana,emite,emula,enano,enema,enlac,enzim,erais,erizo,errar,esbin,escol,espía,euros,fardo,farol,favor,febro,felon,fenos,feudo,filón,finca,fisca,flema,flete,floja,flojo,fluir,fobia,forja,foton,freno,fumar,funda,futon,gafas,galas,gales,galgo,gamas,ganga,garbo,garzo,gatas,gatos,genes,genio,geoda,gigas,girar,giros,globe,goces,goles,golpe,gomas,gordo,gotas,gozan,gramo,grana,grano,grava,gripe,grúas,guapo,guata,gueto,guías,hacha,hadas,halla,harpa,heces,helar,helio,hemos,herir,higos,hilar,hindu,hipos,hojas,holán,honra,horas,horno,hucha,hueco,huevo,huida,humor,hurra,ibero,icono,idear,igual,ilusa,iluso,impar,impio,impío,indio,infer,irán,isis,jaque,jarra,jaula,jeans,jefes,jeque,jiron,joyas,judia,judio,jugos,julio,junco,jurat,karma,kilos,koala,labio,lacas,ladra,lagos,lamer,lampa,lanas,lapiz,larva,lasas,latir,laton,laudo,lavar,lazos,lecho,legal,legua,lejos,lemas,leñas,leños,lepra,letón,libar,libre,licor,ligas,limar,lince,linea,lisos,listo,litre,llano,llega,llena,lleva,lobos,locos,lodos,lomas,lomba,lomos,lotes,lotos,lucas,lucen,lucha,luces,luego,lunes,mable,macho,maciz,magia,magos,majes,males,mamás,manco,manes,mangó,manso,manía,mañas,mapas,maras,marcó,mares,maros,masas,mazos,mecas,mecer,mecha,media,mejor,menta,menus,mezcl,migas,mijar,mimar,minas,miope,mitos,modal,mohos,moles,monas,monos,monta,moños,morar,moras,morbo,morro,mosca,motel,motos,mover,mozos,mueca,mulos,muñon,muros,musas,musgo,mutua,mutuo,nacen,nadan,naipe,nardo,nasal,natal,naves,necio,negar,negro,nenes,nerón,nexos,nieta,nieto,ninfa,nodal,nomás,noria,notar,nubes,nudos,nuera,nuevo,obesa,obeso,obrar,obras,ocres,oleaj,olmos,ondas,opaco,oreja,orion,orlas,oscar,otero,otros,oveja,oxido,pacas,pacos,pagan,paisa,palco,paleo,palma,pamba,panko,papas,paras,pareo,Paris,parma,pasos,peaje,pecar,pecas,pelar,pelón,penal,pepas,peral,perdi,peris,pesos,picas,picos,pilas,pinos,piojo,pipos,plaga,plena,pobre,pocos,podas,poema,poker,poleo,polín,polos,pomez,pompa,poner,popas,poros,posar,poste,potro,prado,premo,presa,proba,profe,prole,pudin,pulga,pumas,puñal,pupas,puras,puros,queso,quota,rabos,racha,radar,radio,rajas,ramas,ramos,rapar,rapaz,rapes,raras,rasos,rayas,rayos,razon,recto,redes,refan,regio,regla,reina,rejas,reloj,remar,remos,renal,renta,reñir,reses,retar,reyes,rezar,rezos,riada,ribas,ricas,ricos,rimas,rinde,riñon,risas,risos,rival,roble,roces,roche,rodeo,rojas,rojos,rolón,romas,rompe,ropas,rosas,rotas,rotor,rubio,rublo,rudos,rueda,ruego,ruina,rumba,rumbo,rumor,runas,rural,rutas,sabia,sabio,sacos,saeta,saga,salas,saldo,salmo,salón,salto,salud,samba,samoa,sanar,sanos,sapos,saqué,sarda,sarna,sarta,sauce,savia,secas,secos,sedan,segun,selva,señal,señas,señor,seria,serie,serio,setas,sidra,siglo,signo,silos,sisas,sitio,sobar,solos,solté,sopas,sorda,sordo,subir,sucia,sucio,sudor,sueco,suena,suero,suite,suizo,sumar,sumas,sumos,surco,susto,tabla,tacos,talco,talle,talon,tango,tapas,tapón,tardo,tarea,tarro,tasar,tauro,tejas,tejon,telas,telón,temas,temer,temor,tenis,tenso,terco,terno,tesis,testa,tibio,ticos,tiene,tigre,tilde,timar,timba,tinta,tinto,tipos,tirar,tocar,toldo,tomar,tonal,tonto,toque,torax,toreo,tormo,torno,torpe,torre,torso,total,totem,traba,traer,trago,trama,tramo,trapo,trato,traza,trece,trefe,treno,trepa,trigo,tripa,trofe,trono,tropa,trozo,truca,truco,tumba,tumor,tunel,turba,turco,turno,tutor,ulcera,union,unico,untar,uñero,vacas,vacio,valer,valon,vapor,varas,varon,vasco,vasos,vasto,velar,vello,venas,venda,venir,venta,verde,verso,vetas,viaja,viaje,vibra,video,viejo,vigor,villa,vinos,viola,viral,virus,visor,vista,vital,viuda,viudo,vivaz,vivir,vocal,volar,votar,votos,vuelo,vulgo,yacen,yegua,yemas,yendo,yugos,zafar,zafra,zanja,zarpa,zonas,zorra,zumos";
+
+const VALID_EN = "aalii,aargh,abaca,abaci,abaft,abase,abash,abate,abbey,abbot,abeam,abets,abhor,abide,abler,abode,abort,about,above,abuse,abuts,abysm,abyss,acais,acari,acids,acidy,acing,ackee,acmes,acned,acnes,acock,acold,acorn,acres,acrid,acted,actin,actor,acute,adage,adapt,added,adder,addle,adeem,adept,adieu,adios,adits,adman,admen,admin,admit,admix,adobe,adopt,adore,adorn,adult,adust,adzes,aegis,aeons,aerie,affix,afire,afoot,afore,afoul,after,again,agape,agate,agave,agent,agers,agger,aggie,aging,agios,agism,agist,agita,aglet,agley,aglow,agmas,agone,agons,agony,agora,agree,agria,ahead,ahold,aided,aider,aides,aigas,ailed,aimed,aimer,aioli,aired,airer,airns,airth,aisle,aitch,aiver,ajuga,akees,akela,alack,alamo,aland,alane,alang,alans,alarm,alary,alate,album,alcid,alder,alert,algae,algal,algas,algid,algor,alias,alibi,alien,align,alike,aline,alive,allay,alley,allot,allow,alloy,allyl,almeh,almes,almud,aloes,aloft,alone,along,aloof,aloud,alpha,altar,alter,altho,altos,alula,alums,amain,amass,amaze,amber,ambit,amble,ambos,ambry,ameba,ameer,amend,ament,amias,amice,amide,amido,amids,amies,amine,amino,amins,amirs,amiss,amity,ammos,amnia,amnic,amnio,amoks,among,amour,amped,ample,amply,amuck,amuse,amyls,ancho,angel,anger,angle,angry,angst,anile,anime,anion,anise,anker,ankhs,ankle,anlas,annal,annas,annex,annoy,anoas,anode,anole,antic,antis,antsy,anvil,aorta,apart,apeak,apers,apery,aphid,aphis,apian,aping,apish,apnea,apods,aport,apple,apply,apron,apses,apsis,aptly,aquae,aquas,arbor,arced,ardeb,ardor,areae,areal,areas,areca,arena,argal,argil,argle,argon,argos,argue,argus,arhat,arias,ariel,arils,arise,arles,armed,armer,armor,aroid,aroma,arose,array,arrow,arses,arsis,arson,artsy,arums,arvos,ascot,ashen,ashes,aside,asked,asker,aspen,asper,asset,atlas,atman,atoll,atoms,atone,atony,attic,audio,audit,auger,aught,augur,aunts,aunty,aural,aurar,auras,aurei,aures,auric,auris,autos,avail,avast,avens,avert,avian,avids,avion,aviso,avoid,avows,await,awake,award,aware,awash,awful,awing,awned,awoke,axial,axile,axils,axing,axiom,axion,axled,axles,axman,axmen,axone,axons,ayahs,azure,baals,babas,babel,babes,babka,baboo,babul,babus,backs,bacon,badge,badly,bagel,baggy,bahts,bairn,baits,baize,baked,baker,bakes,balas,balds,baled,baler,bales,balks,balky,balls,bally,balms,balmy,banal,bands,bandy,banes,bangs,banjo,banks,barbs,bards,bared,barer,bares,barfs,barge,barks,barmy,barns,baron,barps,barre,basal,based,baser,bases,basic,basil,basin,basis,basks,baste,basts,batch,bated,bates,bathe,baths,batik,baton,batts,batty,bauds,baulk,bawds,bawdy,bawls,bayed,bayou,beach,beads,beady,beaks,beams,beamy,beans,beard,bears,beast,beats,beaus,beaut,beaux,bebop,becks,bedew,bedim,beech,beedi,beefs,beefy,beeps,beers,beery,beets,began,beget,begin,begot,begun,being,belay,belch,belie,belle,bells,belly,below,belts,bench,bends,bendy,benes,benne,benny,bents,bergs,berks,berms,berry,berth,beryl,beset,besot,bests,betas,betel,beths,bevel,bezel,bhaji,bikes,biles,bilge,bills,billy,binal,binds,bingo,biome,biont,biota,biped,birch,birds,birls,birth,bison,bites,bitsy,bitts,bitty,black,blade,blame,bland,blank,blare,blase,blast,blats,blaze,bleak,blear,bleat,bleed,blend,bless,blimp,blind,blini,blink,blips,bliss,blitz,bloat,blobs,block,blocs,blogs,bloke,blond,blood,bloom,blown,blows,blowy,blubs,blues,bluey,bluff,blunt,blurb,blurs,blurt,blush,board,boars,boast,boats,bobby,boded,bodes,bodge,bogey,boggy,bogie,bogus,boils,bolar,bolas,bolls,bolts,bolus,bombs,bonds,boned,boner,bones,boney,bongo,bongs,bonks,bonne,bonny,bonus,boobs,booby,books,booms,boomy,boons,boors,boost,boots,booty,booze,boozy,borax,bored,borer,bores,borne,boron,bosom,bossy,bosun,botch,bound,bouts,bowed,bowel,bower,bowls,boxed,boxer,boxes,boyar,boyos,brace,brack,bract,brads,brags,braid,brain,brake,brand,brash,brass,brats,brave,bravo,brawn,brays,braze,bread,break,breed,breve,brews,briar,bribe,brick,bride,brief,brier,brill,brine,bring,brink,briny,brisk,broad,broil,broke,brood,brook,broth,brown,brows,brush,brute,bucks,buddy,budge,buggy,bugle,build,built,bulbs,bulge,bulky,bulla,bulls,bully,bumph,bumps,bumpy,bunch,bunco,bungs,bunks,bunny,bunts,buoys,burbs,burds,burgs,burly,burns,burnt,burps,burro,burrs,burst,busby,bused,buses,bushy,busts,busty,buyer,bwana,bylaw,bytes,cabal,cabby,cabin,cable,cacao,cache,cacti,caddy,cadet,cadge,caeca,cafes,caged,cager,cages,cagey,cairn,caked,cakes,calif,calks,calls,calms,camel,cameo,camps,campy,canal,candy,caned,caner,canes,canid,canna,canny,canoe,canon,canst,canto,caper,capes,capon,carat,carbo,cards,cared,carer,cares,cargo,carks,carls,carol,carry,carts,carve,cased,cases,casks,caste,casts,catch,cater,caves,cavil,cedar,ceded,cedes,cells,celts,cents,chafe,chaff,chain,chair,chalk,champ,chant,chaos,chaps,chard,charm,chars,chart,chase,cheap,cheat,check,cheek,cheer,chess,chest,chews,chewy,chick,chide,chief,child,chili,chill,chime,china,chink,chips,chirp,chive,choir,choke,chomp,chops,chord,chore,chose,chuck,chuff,chugs,chump,chunk,churn,chute,cider,cigar,cinch,circa,cited,cites,civet,civic,civil,clack,clads,claim,clamp,clams,clang,clank,clans,claps,clash,clasp,class,claws,clays,clean,clear,cleat,cleft,clerk,click,cliff,climb,cling,clink,clips,cloak,clock,clods,clogs,clone,clops,close,cloth,clots,cloud,clout,clove,clown,clubs,cluck,clued,clues,clump,clung,clunk,coach,coals,coast,coats,cobra,cocoa,cocos,codec,coded,coder,codes,codex,codon,coeds,coils,coins,colas,colby,colds,colon,color,colts,comas,combo,combs,comer,comes,comet,comfy,comic,comma,comps,conch,condo,coned,cones,conga,conic,coops,coots,coped,coper,copes,coral,cords,cored,corer,cores,corgi,corks,corky,corns,corny,corps,costs,couch,could,count,coupe,coups,court,coven,cover,covet,covey,crack,craft,crags,cramp,crams,crane,crank,craps,crash,crass,crate,crave,crawl,craze,crazy,creak,cream,credo,creed,creek,creep,creme,crepe,crept,cress,crest,crews,crick,cried,crier,cries,crime,crimp,crisp,crits,croak,crock,croft,crone,crook,croon,crops,cross,crowd,crown,crude,cruel,cruet,crumb,crush,crust,crypt,cubed,cubes,cubic,cubit,cuddy,cuffs,culls,curbs,curds,cured,curer,cures,curls,curly,curry,curse,curve,curvy,cushy,cutie,cyber,cycle,cynic,daily,dairy,daisy,dance,dandy,dared,darer,dares,dated,dater,dates,datum,daunt,dawns,deals,dealt,dears,death,debit,debts,debug,debut,decal,decay,decks,decor,decoy,decry,deeds,deity,delay,delft,delta,delve,demon,demos,demur,denim,dense,depot,depth,derby,desks,deter,detox,deuce,devil,dials,diary,dicey,digit,dills,dilly,dimly,dinar,dined,diner,dines,dingo,dingy,diode,dirty,disco,discs,dishy,ditch,ditto,ditty,divan,dived,diver,dives,divot,dizzy,dodge,dodgy,doing,dolls,dolly,domed,domes,donor,donut,dooms,doors,doper,dopes,dopey,dosed,doses,dotty,doubt,dough,douse,doves,dowdy,dowel,downs,downy,dowry,doyen,dozed,dozen,dozer,draft,drags,drain,drake,drama,drank,drape,drawl,drawn,draws,dread,dream,dress,dried,drier,drift,drill,drink,drips,drive,droit,droll,drone,drool,droop,drops,dross,drove,drown,drugs,drums,drunk,dryer,dryly,ducat,ducks,ducky,duels,duets,duffs,dulls,dummy,dumps,dumpy,dunce,dunes,dunks,duped,duper,dupes,dusty,dutch,dwarf,dwell,dwelt,dying,eager,eagle,early,earns,earth,eased,easel,eaten,eater,eaves,ebbed,ebony,edged,edger,edges,edict,edify,eight,eject,elbow,elder,elect,elfin,elite,elope,elude,elves,email,embed,ember,emcee,emoji,emote,empty,ended,enemy,enjoy,ennui,ensue,enter,entry,envoy,epoch,epoxy,equal,equip,erase,erode,error,erupt,essay,ester,ether,ethic,ethos,evade,event,every,evict,evils,evoke,exact,exalt,exams,exalt,excel,exert,exile,exist,expat,expel,extol,extra,exude,exult,eying,fable,faced,facer,faces,facet,facts,faddy,faded,fades,fails,faint,fairy,faith,faked,faker,fakes,falls,false,famed,fancy,fangs,farce,fared,fares,farms,fatal,fatty,fault,fauna,favor,feast,feats,feeds,feels,feign,feint,felon,femur,fence,fends,feral,ferry,fetal,fetch,fetid,fetus,feuds,fever,fewer,fiber,fibre,field,fiend,fifth,fifty,fight,filch,filed,filer,files,filet,fills,filly,films,filmy,filth,final,finch,finds,fined,finer,fines,fired,fires,firms,first,fishy,fixed,fixer,fixes,fizzy,fjord,flack,flags,flair,flake,flaky,flame,flams,flank,flaps,flare,flash,flask,flats,flaws,flaxy,fleas,fleck,flees,fleet,flesh,flick,flier,flies,fling,flint,flips,flirt,float,flock,flogs,flood,floor,flora,floss,flour,flows,fluid,fluke,fluky,flung,flunk,flush,flute,foals,foams,foamy,focal,focus,fogey,foggy,foils,folds,folio,folks,folly,fonts,foods,fools,foots,foray,force,forgo,forge,forgo,forks,forms,forte,forth,forts,forty,forum,fosse,found,fount,fours,fowls,foxed,foxes,foyer,frail,frame,frank,fraud,frays,freak,freed,fresh,friar,fried,fries,frill,frisk,frizz,frock,frogs,front,frost,froth,froze,fruit,frump,fully,fumes,funds,fungi,funky,funny,furls,furry,fused,fuses,fussy,fusty,fuzzy,gaffe,gaily,gains,gaits,galas,gales,galls,games,gamma,gamut,gangs,gapes,garbs,gases,gasps,gates,gauge,gaunt,gauze,gauzy,gavel,gazer,gazes,gears,geeks,geeky,geese,genes,genie,genre,genus,germs,ghost,giant,gifts,gilds,gills,gilts,gimme,girth,gists,given,giver,gives,gizmo,gland,glare,glass,glaze,gleam,glean,glees,glens,glide,glint,globe,globs,gloom,glory,gloss,glove,glows,glued,glues,gluey,glyph,gnash,gnats,gnome,goads,goals,goats,godly,goers,going,golds,golfs,gonad,goner,gongs,gonna,goods,goody,gooey,goofs,goofy,goose,gorge,gouge,gourd,grace,grade,graft,grail,grain,grand,grant,grape,graph,grasp,grass,grate,grave,gravy,grays,graze,great,greed,greek,green,greet,grief,grill,grime,grimy,grind,grins,gripe,grips,grist,grits,groan,groat,groin,groom,grope,gross,group,grout,grove,growl,grown,grows,grubs,gruel,gruff,grump,grunt,guano,guard,guava,guess,guest,guide,guild,guilt,guise,gulch,gulls,gulps,gummy,gumps,gunky,gunny,gusto,gusty,gutsy,gypsy,habit,hacks,haiku,hails,hairs,hairy,haler,halts,halve,hands,handy,hangs,happy,hardy,harem,harms,harps,harpy,harry,harsh,haste,hasty,hatch,hated,hater,hates,hauls,haunt,haven,havoc,hawks,hazel,heads,heals,heaps,heard,heart,heats,heavy,hedge,heeds,heels,hefts,hefty,heirs,heist,helix,hello,helps,hence,herbs,herds,heron,hiker,hikes,hills,hilly,hilts,hinds,hinge,hints,hippo,hippy,hired,hires,hitch,hived,hives,hoard,hoary,hobby,hobos,hocks,hoers,hoist,holds,holed,holes,holly,holms,homes,honey,hoods,hoofs,hooks,hoops,hoped,hoper,hopes,horde,horns,horny,horse,horsy,hosed,hoses,hosts,hotel,hotly,hound,hours,house,hovel,hover,howdy,howls,hubby,huffs,huffy,huger,hulks,hulky,human,humid,humor,humps,humpy,humus,hunch,hunks,hunky,hunts,hurls,hurry,hurts,husks,husky,hydra,hydro,hyena,hymen,hymns,hyper,ichor,icier,icily,icing,icons,ideal,ideas,idiom,idiot,idled,idler,idles,idols,idyll,igloo,iliac,image,imago,imams,imbue,impel,imply,inane,incur,index,indie,inept,inert,infer,ingot,inked,inlay,inlet,inner,input,inset,inter,intro,inure,irked,irons,irony,isled,isles,islet,issue,itchy,items,ivory,ivied,ivies,jabot,jacks,jaded,jades,jaggs,jaggy,jails,jaunt,jazzy,jeans,jeeps,jelly,jenny,jerks,jerky,jests,jewel,jibed,jibes,jiffy,jiggs,jimmy,jinks,jinns,jived,jiver,jives,joans,jocks,johns,joins,joint,joked,joker,jokes,jolly,jolts,joust,joyed,judge,juice,juicy,julep,jumbo,jumps,jumpy,junco,junks,junky,juror,justs,jutes,kayak,kebab,keels,keeps,keyed,khaki,kicks,kills,kilns,kilts,kinds,kings,kinks,kinky,kiosk,kites,kithe,knack,knave,knead,kneed,kneel,knees,knelt,knife,knits,knobs,knock,knoll,knots,known,knows,knurl,koala,kudos,label,labor,laced,laces,lacks,laden,ladle,lager,lairs,lakes,lambs,lamed,lamps,lance,lands,lanes,lanky,lapel,lapse,large,larks,larva,laser,lassi,lasso,lasts,latch,later,latex,lathe,latte,laugh,layer,leads,leafy,leaks,leaky,leans,leant,leapt,learn,lease,leash,least,leave,ledge,leech,leeks,lefts,lefty,legal,leggy,lemma,lemon,lemur,lends,level,lever,light,liked,liken,likes,lilac,lilts,limbo,limbs,limed,limes,limey,limit,limns,limps,lined,linen,liner,lines,lingo,lings,links,lions,lists,liter,lithe,lived,liven,liver,lives,livid,llama,loads,loafs,loams,loamy,loans,loath,lobby,lobes,local,locks,locus,lodes,lodge,lofts,lofty,logic,login,logos,loins,looks,looms,loons,loony,loops,loopy,loose,loots,loped,loper,lopes,lords,lorry,loser,loses,lossy,lotus,lousy,louse,loved,lover,loves,lower,lowly,loyal,lucid,lucky,lulls,lumen,lumps,lumpy,lunar,lunch,lunge,lungs,lupus,lurch,lured,lurer,lures,lurks,lusty,lyric,macaw,maced,macer,maces,macho,macro,madam,madly,mafia,magic,magma,maids,mails,maims,mains,maize,major,maker,makes,males,malls,malts,malty,mamas,mamba,mambo,mamma,mammy,mango,mania,manic,manly,manor,maple,march,mares,marks,marry,marsh,masks,mason,masse,match,mated,mater,mates,matte,mauls,mauve,maxed,maxes,mayor,mazes,mealy,means,meant,meats,meaty,medal,media,medic,melee,melon,melts,memos,mends,menus,meows,mercy,merge,merit,merry,meshy,messy,metal,meted,meter,metro,micas,micro,midst,miffs,might,mills,mimed,mimer,mimes,mimic,mince,minds,mined,miner,mines,minor,mints,minty,minus,mired,mires,mirth,miser,missy,mists,misty,miter,mitre,mitts,mixed,mixer,mixes,moans,moats,mocha,mocks,modal,model,modem,modes,mogul,moist,molar,molds,moldy,moles,molls,molts,money,monks,month,moods,moody,moons,moose,moots,moped,moper,mopes,moral,morel,mores,morph,mossy,motel,moths,motif,motor,motto,mound,mount,mourn,mouse,mousy,mouth,moved,mover,moves,movie,mowed,mower,mucky,mucus,muddy,muffs,muggy,mulch,mules,mulls,mumps,munch,mural,murky,mused,muses,mushy,music,musks,musky,musty,muted,muter,mutes,mutts,myrrh,myths,nacho,naive,naked,named,namer,names,nanny,napes,nappy,nasal,nasty,natal,naval,navel,neaps,nears,necks,needs,nerds,nerdy,nerve,nervy,nests,never,newer,newly,newsy,nexus,niche,nicks,niece,night,nimby,ninja,ninth,noble,nobly,nodes,noise,noisy,nomad,nonce,nooks,norms,north,nosed,noses,nosey,notch,noted,notes,nouns,novel,nudge,nulls,numbs,nurse,nutty,nylon,nymph,oaken,oared,oases,oasis,oater,oaths,occur,ocean,ocher,ochre,octet,octet,oddly,odder,odors,offal,offer,often,ogled,ogler,ogles,ogres,oiled,oiler,okays,older,olden,olive,omega,omens,omits,onset,oohed,oomph,oozed,oozes,opals,opens,opera,opted,optic,orbit,order,organ,osier,other,ottar,otter,ought,ounce,outdo,outed,outer,outgo,ovary,ovals,ovary,ovens,overt,ovoid,ovule,owing,owned,owner,oxide,ozone,paced,pacer,paces,packs,paddy,pagan,paged,pager,pages,pails,pains,paint,pairs,paled,paler,pales,palms,palsy,pampa,panda,panel,panes,pangs,panic,pansy,pants,papal,papas,paper,parch,pared,parer,pares,parks,parts,party,pasta,paste,pasts,pasty,patch,pated,pater,patio,pause,paved,paver,paves,pawed,pawns,peach,peaks,pearl,pears,pease,peats,pecan,pecks,pedal,peeks,peels,peeps,peers,penny,peons,peppy,perch,peril,perks,perky,perms,perps,pesto,pests,petal,peter,petty,phase,phone,photo,piano,picks,picky,piece,piers,piggy,piked,piker,pikes,piled,piles,pills,pilot,pimps,pinch,pined,pines,pings,pinko,pinks,pinky,pints,pious,piped,piper,pipes,pique,pixel,pixie,pizza,place,plaid,plain,plait,plane,plank,plans,plant,plate,plats,plays,plaza,plead,pleas,pleat,plied,plier,plies,plods,plops,plots,plows,ploys,pluck,plugs,plumb,plume,plump,plums,plums,plunk,plush,plyer,poach,pocks,poems,poets,point,poise,poked,poker,pokes,polar,poled,poles,polio,polls,polyp,pomps,ponds,pools,poops,popes,poppy,popup,porch,pored,pores,porks,porky,ports,posed,poser,poses,posit,posts,potty,pouch,pound,pours,pouts,pouty,power,prams,prank,prawn,prays,press,prexy,preys,price,pricy,pride,pried,prier,pries,prime,primo,primp,prims,prink,print,prior,privy,prize,probe,prods,profs,promo,prone,prong,proof,props,prose,proud,prove,prowl,prude,prune,psalm,pubic,pucka,pucks,pudgy,puffs,puffy,puggy,puked,pukes,pulls,pulps,pulpy,pulse,pumps,punch,punks,punky,pupil,puppy,puree,purer,purge,purls,purrs,purse,pushy,putts,putty,pygmy,pylon,pyres,quack,quaff,quail,qualm,quart,quash,quasi,queen,queer,quell,query,quest,queue,quick,quiet,quill,quilt,quips,quirk,quota,quote,quoth,rabbi,rabid,raced,racer,races,racks,radar,radii,radio,radon,rafts,raged,rages,raids,rails,rainy,raise,rajah,raked,raker,rakes,rally,ramen,ramps,ranch,range,rangy,ranks,rants,rapid,rared,rarer,rares,rasps,raspy,rated,rater,rates,ratio,ratty,raved,raven,raves,rayon,razed,razer,razes,razor,reach,react,reads,ready,realm,reals,reams,reaps,rears,rebel,rebus,recap,recon,recur,redid,redly,reeds,reedy,reefs,reeks,reedy,reels,refer,refit,regal,rehab,reign,reins,relax,relay,relic,remit,renal,renew,rents,repay,repel,reply,repot,reran,rerun,reset,resin,rests,retch,retro,retry,reuse,revel,revel,ricer,rices,rider,rides,ridge,rifle,right,rigid,rigor,riled,rills,rinds,rings,rinse,riots,ripen,riper,risen,riser,rises,risks,risky,rites,ritzy,rival,riven,river,rivet,roads,roams,roars,roast,robed,robes,robin,robot,rocks,rocky,rodeo,rogue,roles,rolls,roman,romps,roods,roofs,rooks,rooms,roomy,roots,roost,roped,roper,ropes,roses,rosin,rotor,rouge,rough,round,rouse,route,rover,roves,rowdy,rowed,rower,royal,rugby,ruins,ruled,ruler,rules,rumba,rumor,rumps,runes,rungs,runny,runts,rural,rusts,rusty,sadly,safes,safer,sages,sahib,sails,saint,sakes,salad,sales,salon,salsa,salts,salty,salve,salvo,samba,sands,sandy,saner,satin,satyr,sauce,saucy,sauna,saute,saved,saver,saves,savor,savoy,savvy,sawed,scale,scalp,scald,scams,scamp,scams,scant,scare,scarf,scary,scene,scent,schmo,scoff,scold,scone,scoop,scope,score,scorn,scout,scowl,scram,scrap,scree,screw,scrub,scrum,sculk,sedan,seeds,seedy,seeks,seems,seeps,seize,sense,sepia,serif,serve,setup,seven,sever,sewer,shade,shady,shaft,shake,shaky,shall,shame,shams,shape,shard,share,shark,sharp,shave,shawl,shear,sheds,sheen,sheep,sheer,sheet,shelf,shell,shied,shift,shims,shine,shiny,shire,shirt,shock,shoes,shone,shook,shoot,shops,shore,shorn,short,shout,shove,shown,shows,showy,shrew,shrub,shrug,shuck,shuns,shunt,shush,sided,sides,siege,sieve,sighs,sight,sigma,signs,silks,silky,sills,silly,silts,since,singe,sinks,siren,sires,sissy,sited,sites,sixth,sixty,sized,sizes,skate,skein,skied,skier,skies,skill,skimp,skims,skins,skips,skirt,skull,skunk,slabs,slack,slags,slain,slake,slams,slang,slant,slaps,slash,slate,slats,slave,slays,sleds,sleek,sleep,sleet,slept,slice,slick,slide,slime,slimy,sling,slink,slips,slope,slops,slosh,sloth,slots,slows,slugs,slump,slums,slung,slunk,slurp,slurs,small,smart,smash,smear,smell,smelt,smile,smirk,smite,smith,smock,smoke,smoky,smote,snack,snafu,snags,snail,snake,snaky,snaps,snare,snark,snarl,sneak,sneer,snide,sniff,snips,snobs,snoop,snore,snort,snout,snows,snowy,snubs,snuck,snuff,soapy,soars,sober,socks,soggy,soils,solar,soled,soles,solid,solos,solve,sonic,sonny,sooty,sorry,sorts,souls,sound,soups,soupy,south,sowed,space,spade,spank,spans,spare,spark,spars,spasm,spate,spawn,speak,spear,speck,specs,speed,spell,spend,spent,spice,spicy,spied,spiel,spier,spies,spike,spiky,spill,spine,spins,spiny,spoke,spoof,spook,spool,spoon,spore,sport,spots,spout,spray,spree,sprig,spuds,spunk,spurn,spurs,spurt,squad,squab,squat,squid,stack,staff,stage,stags,staid,stain,stair,stake,stale,stalk,stall,stamp,stand,stank,stare,stark,stars,start,stash,state,stave,stays,steak,steal,steam,steel,steep,steer,stems,steps,stern,stews,stick,stiff,still,stilt,sting,stint,stirs,stock,stoic,stoke,stole,stomp,stone,stony,stood,stool,stoop,stops,store,stork,storm,story,stout,stove,stows,strap,straw,stray,strep,strip,strop,strum,strut,stuck,studs,study,stuff,stump,stung,stunk,stunt,style,suave,suede,sugar,suite,suits,sulks,sulky,sunny,super,surge,sushi,swabs,swamp,swang,swank,swans,swaps,swarm,swath,swats,swear,sweat,sweep,sweet,swell,swept,swift,swigs,swill,swine,swing,swipe,swirl,swish,swoon,swoop,sword,swore,sworn,swung,syrup,tabby,table,tacit,tacks,tacky,taffy,tails,taint,taken,taker,takes,tales,talks,tally,talon,tamed,tamer,tames,tango,tangs,tangy,tanks,taped,taper,tapes,tardy,tarps,tasks,taste,tasty,tatty,taunt,taupe,tawny,taxed,taxes,teach,tears,teary,tease,techs,teddy,teeth,tempo,temps,tench,tends,tense,tenth,tents,tepee,tepid,terms,terns,terse,tests,texts,thank,theft,their,theme,there,these,thick,thief,thigh,thing,think,third,thong,thorn,those,three,threw,throw,thrum,thuds,thugs,thumb,thump,tiara,tidal,tides,tiers,tiger,tight,tiled,tiles,tilts,timed,timer,times,timid,tippy,tipsy,tired,titan,tithe,title,toast,today,toddy,token,tolls,tombs,tonal,toned,toner,tones,tongs,tonne,tools,tooth,topaz,topic,torch,torso,total,totem,touch,tough,tours,towed,towel,tower,towns,toxic,trace,track,tract,trade,trail,train,trait,tramp,traps,trash,trawl,trays,tread,treat,treed,trees,trend,triad,trial,tribe,trick,tried,tries,trike,trill,trims,trips,trite,troll,tromp,troop,trope,troth,trots,trout,trove,truce,truck,trued,truer,trues,truly,trump,trunk,truss,trust,truth,tryst,tubal,tubas,tubby,tubed,tuber,tubes,tucks,tuffs,tufts,tulip,tumid,tumor,tunas,tuned,tuner,tunes,tunic,turns,tusks,tutor,twain,twang,tweak,tweed,tweet,twice,twigs,twill,twine,twins,twirl,twist,tying,typed,types,typos,udder,ulcer,ultra,umbra,umped,uncle,uncut,under,undid,undue,unfed,unfit,unify,union,unite,units,unity,unlit,unmet,unsay,untie,until,unwed,unzip,upper,upset,urban,ureas,urged,urges,urine,usage,usher,using,usual,usurp,utile,utter,uvula,vague,valet,valid,valor,value,valve,vamps,vanes,vanir,vapid,vapor,vases,vault,vegan,veils,veins,veiny,veldt,venom,vents,venue,verbs,verge,verse,vibes,vicar,video,views,vigil,vigor,villa,vinca,vines,vinyl,viola,viper,viral,virus,visor,visit,vista,vitas,vital,vivid,vivre,vixen,vocal,vodka,vogue,voice,voila,volts,vomit,voter,votes,vouch,vowed,vowel,vulva,wacky,waded,wader,wades,waged,wager,wages,wagon,waifs,wails,waist,waits,waked,waken,wakes,walks,walls,waltz,wands,waned,wanes,wants,wards,wares,warns,warps,warts,warty,waste,watch,water,watts,waved,waver,waves,waxed,waxes,weals,weans,wears,weary,weave,webby,wedge,weeds,weedy,weeks,weeny,weigh,weird,wells,wench,wheat,wheel,where,which,while,whiff,whims,whine,whiny,whips,whirl,whisk,white,whits,whizz,whole,whose,wicks,widen,wider,width,wield,wifty,wilds,wiled,wiles,wills,willy,wilts,wimps,wimpy,wince,winch,winds,windy,wined,wines,wings,winks,wiped,wiper,wipes,wired,wires,wised,wiser,wisps,wispy,witch,witty,woken,woman,women,wonks,wonky,woods,woody,words,wordy,works,world,worms,wormy,worry,worse,worst,worth,would,wound,woven,wrack,wrath,wreak,wreck,wrest,wring,wrist,write,wrong,wrote,yacht,yanks,yards,yarns,yeahs,yearn,years,yeast,yells,yield,yikes,yodel,yoked,yokes,young,yours,youth,yucca,zebra,zeros,zesty,zilch,zincs,zonal,zones";
 
 let ANSWER_LIST, VALID_SET;
 
-function initWordLists() {
-  ANSWER_LIST = ANSWERS_RAW.split(',').map(w => w.trim().toUpperCase());
-  const validWords = VALID_RAW.split(',').map(w => w.trim().toUpperCase());
+function initWordLists(lang) {
+  const answersRaw = lang === 'es' ? ANSWERS_ES : ANSWERS_EN;
+  const validRaw = lang === 'es' ? VALID_ES : VALID_EN;
+  ANSWER_LIST = answersRaw.split(',').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
+  const validWords = validRaw.split(',').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
   VALID_SET = new Set([...ANSWER_LIST, ...validWords]);
 }
+
+// ========== i18n ==========
+const I18N = {
+  en: {
+    howToPlayTitle: 'HOW TO PLAY',
+    howToPlayP1: 'Guess the word in 6 tries. Each guess must be a valid 5-letter word.',
+    howToPlayP2: 'After each guess, the tiles will flip to show how close your guess was:',
+    greenHint: 'Green',
+    greenDesc: ' \u2014 correct letter, correct spot',
+    yellowHint: 'Yellow',
+    yellowDesc: ' \u2014 correct letter, wrong spot',
+    grayHint: 'Gray',
+    grayDesc: ' \u2014 letter not in the word',
+    exampleLabel: 'Example:',
+    exampleDesc: '<strong>S</strong> is in the word and in the correct spot. <strong>A</strong> is in the word but in the wrong spot.',
+    twistTitle: 'THE TWIST: FADING MEMORY',
+    twistP1: 'In <strong>FADELE</strong>, previous guesses <strong>fade away</strong> after a few turns, forcing you to rely on your memory!',
+    fadeNote: 'This is what a faded row looks like \u2014 the colors dissolve like fading memories.',
+    keyboardNote: 'The <strong>keyboard colors never fade</strong> \u2014 they are your persistent memory aid. Use them wisely!',
+    newDaily: 'A new FADELE is available each day.',
+    statsTitle: 'STATISTICS',
+    played: 'Played',
+    winPct: 'Win %',
+    currentStreak: 'Current<br>Streak',
+    maxStreak: 'Max<br>Streak',
+    distTitle: 'Guess Distribution',
+    nextFadele: 'Next FADELE',
+    share: 'Share',
+    challengeTitle: 'Challenge a Friend',
+    challengePlaceholder: '5-letter word',
+    createBtn: 'Create',
+    challengeBadge: 'Friend Challenge',
+    dailyLink: "Play Today's FADELE",
+    notEnough: 'Not enough letters',
+    notInList: 'Not in word list',
+    copied: 'Copied to clipboard!',
+    couldNotCopy: 'Could not copy',
+    challengeCopied: 'Challenge link copied!',
+    word5Letters: 'Word must be 5 letters',
+    notValid: 'Not a valid word',
+    winMessages: ['Genius!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Great!', 'Phew!'],
+    settingsTitle: 'SETTINGS',
+    languageLabel: 'Language',
+    difficultyLabel: 'Difficulty',
+    easyBtn: 'Easy',
+    hardBtn: 'Hard',
+    settingsNote: 'Language changes reload the page. Difficulty applies immediately.'
+  },
+  es: {
+    howToPlayTitle: 'COMO JUGAR',
+    howToPlayP1: 'Adivina la palabra en 6 intentos. Cada intento debe ser una palabra valida de 5 letras.',
+    howToPlayP2: 'Despues de cada intento, las fichas mostraran pistas sobre tu respuesta:',
+    greenHint: 'Verde',
+    greenDesc: ' \u2014 letra correcta, posicion correcta',
+    yellowHint: 'Amarillo',
+    yellowDesc: ' \u2014 letra correcta, posicion incorrecta',
+    grayHint: 'Gris',
+    grayDesc: ' \u2014 la letra no esta en la palabra',
+    exampleLabel: 'Ejemplo:',
+    exampleDesc: '<strong>S</strong> esta en la palabra y en la posicion correcta. <strong>A</strong> esta en la palabra pero en la posicion incorrecta.',
+    twistTitle: 'EL GIRO: MEMORIA QUE SE DESVANECE',
+    twistP1: 'En <strong>FADELE</strong>, los intentos anteriores <strong>se desvanecen</strong> despues de unos turnos. ¡Confia en tu memoria!',
+    fadeNote: 'Asi se ve una fila desvanecida \u2014 los colores se disuelven como recuerdos.',
+    keyboardNote: 'Los <strong>colores del teclado nunca se desvanecen</strong> \u2014 son tu ayuda de memoria. ¡Usalos sabiamente!',
+    newDaily: 'Un nuevo FADELE esta disponible cada dia.',
+    statsTitle: 'ESTADISTICAS',
+    played: 'Jugadas',
+    winPct: '% Victorias',
+    currentStreak: 'Racha<br>Actual',
+    maxStreak: 'Racha<br>Maxima',
+    distTitle: 'Distribucion de Intentos',
+    nextFadele: 'Proximo FADELE',
+    share: 'Compartir',
+    challengeTitle: 'Reta a un Amigo',
+    challengePlaceholder: 'palabra de 5',
+    createBtn: 'Crear',
+    challengeBadge: 'Reto de Amigo',
+    dailyLink: 'Jugar el FADELE de Hoy',
+    notEnough: 'Faltan letras',
+    notInList: 'No esta en la lista',
+    copied: '¡Copiado al portapapeles!',
+    couldNotCopy: 'No se pudo copiar',
+    challengeCopied: '¡Enlace de reto copiado!',
+    word5Letters: 'La palabra debe tener 5 letras',
+    notValid: 'Palabra no valida',
+    winMessages: ['¡Genio!', '¡Magnifico!', '¡Impresionante!', '¡Esplendido!', '¡Genial!', '¡Uff!'],
+    settingsTitle: 'AJUSTES',
+    languageLabel: 'Idioma',
+    difficultyLabel: 'Dificultad',
+    easyBtn: 'Facil',
+    hardBtn: 'Dificil',
+    settingsNote: 'Cambiar idioma recarga la pagina. La dificultad aplica de inmediato.'
+  }
+};
+
+let currentLang = 'en';
+function t(key) { return I18N[currentLang][key] || I18N.en[key] || key; }
+
+// ========== Settings ==========
+const SETTINGS_KEY = 'fadele-settings';
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return { language: 'en', difficulty: 'easy' };
+    const s = JSON.parse(raw);
+    return {
+      language: (s.language === 'es') ? 'es' : 'en',
+      difficulty: (s.difficulty === 'hard') ? 'hard' : 'easy'
+    };
+  } catch (e) {
+    return { language: 'en', difficulty: 'easy' };
+  }
+}
+
+function saveSettings(settings) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {}
+}
+
+let gameSettings = loadSettings();
+currentLang = gameSettings.language;
+
+// Language-suffixed storage keys
+function stateKey() { return 'fadele-state-' + currentLang; }
+function statsKey() { return 'fadele-stats-' + currentLang; }
+function firstVisitKey() { return 'fadele-first-visit-' + currentLang; }
+function usedWordsKey() { return 'fadele-used-words-' + currentLang; }
 
 // ========== Constants ==========
 const NUM_ROWS = 6;
 const NUM_COLS = 5;
 const EPOCH = new Date(2026, 0, 1); // Jan 1, 2026
-const STATE_KEY = 'fadele-state';
-const STATS_KEY = 'fadele-stats';
-const FIRST_VISIT_KEY = 'fadele-first-visit';
-const USED_WORDS_KEY = 'fadele-used-words';
 
 // ========== Game State ==========
 let gameState = {
@@ -924,7 +1146,7 @@ function getDayOffset() {
 
 function getUsedWords() {
   try {
-    const raw = localStorage.getItem(USED_WORDS_KEY);
+    const raw = localStorage.getItem(usedWordsKey());
     if (!raw) return new Set();
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return new Set();
@@ -936,7 +1158,7 @@ function getUsedWords() {
 
 function saveUsedWords(usedSet) {
   try {
-    localStorage.setItem(USED_WORDS_KEY, JSON.stringify([...usedSet]));
+    localStorage.setItem(usedWordsKey(), JSON.stringify([...usedSet]));
   } catch (e) {}
 }
 
@@ -1063,7 +1285,9 @@ function updateKeyboard() {
   }
   document.querySelectorAll('.key[data-key]').forEach(key => {
     const letter = key.getAttribute('data-key').toLowerCase();
-    if (keyMap[letter]) {
+    if (gameSettings.difficulty === 'hard') {
+      key.removeAttribute('data-state');
+    } else if (keyMap[letter]) {
       key.setAttribute('data-state', keyMap[letter]);
     } else {
       key.removeAttribute('data-state');
@@ -1223,13 +1447,13 @@ async function handleSubmit() {
   if (isAnimating) return;
 
   if (currentGuess.length !== NUM_COLS) {
-    showToast('Not enough letters');
+    showToast(t('notEnough'));
     shakeRow(gameState.rowIndex);
     return;
   }
 
   if (!VALID_SET.has(currentGuess)) {
-    showToast('Not in word list');
+    showToast(t('notInList'));
     shakeRow(gameState.rowIndex);
     return;
   }
@@ -1250,15 +1474,30 @@ async function handleSubmit() {
   updateKeyboard();
 
   // Apply fading
-  applyFading(true);
+  if (gameSettings.difficulty === 'hard') {
+    // Hard mode: fade the just-revealed row after 2s delay (1s transition = 3s total)
+    const fadingRowIndex = gameState.rowIndex - 1;
+    setTimeout(() => {
+      const rows = document.querySelectorAll('#board .row');
+      if (rows[fadingRowIndex] && !rows[fadingRowIndex].classList.contains('faded')) {
+        rows[fadingRowIndex].classList.add('faded');
+        if (!gameState.fadedRows.includes(fadingRowIndex)) {
+          gameState.fadedRows.push(fadingRowIndex);
+          saveState();
+        }
+      }
+    }, 2000);
+  } else {
+    applyFading(true);
+  }
 
   // Check win/lose
   const isWin = evaluation.every(e => e === 'correct');
   if (isWin) {
     gameState.gameStatus = 'WIN';
     await bounceRow(gameState.rowIndex - 1);
-    const messages = ['Genius!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Great!', 'Phew!'];
-    showToast(messages[gameState.rowIndex - 1] || 'Nice!');
+    const messages = t('winMessages');
+    showToast(messages[gameState.rowIndex - 1] || messages[0]);
     updateStats(true, gameState.rowIndex);
     setTimeout(() => openModal('modal-stats'), 2000);
   } else if (gameState.rowIndex >= NUM_ROWS) {
@@ -1290,7 +1529,7 @@ function handleKeyPress(key) {
     return;
   }
 
-  if (/^[a-zA-Z]$/.test(key) && currentGuess.length < NUM_COLS) {
+  if (/^[a-zA-ZñÑ]$/.test(key) && currentGuess.length < NUM_COLS) {
     currentGuess += key.toUpperCase();
     updateCurrentRow();
     // Pop animation
@@ -1312,7 +1551,7 @@ document.addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (document.querySelector('.modal-overlay.open')) return;
 
-  if (e.key === 'Enter' || e.key === 'Backspace' || /^[a-zA-Z]$/.test(e.key)) {
+  if (e.key === 'Enter' || e.key === 'Backspace' || /^[a-zA-ZñÑ]$/.test(e.key)) {
     e.preventDefault();
     handleKeyPress(e.key);
   }
@@ -1330,13 +1569,13 @@ document.getElementById('keyboard').addEventListener('pointerdown', (e) => {
 // ========== localStorage ==========
 function saveState() {
   try {
-    localStorage.setItem(STATE_KEY, JSON.stringify(gameState));
+    localStorage.setItem(stateKey(), JSON.stringify(gameState));
   } catch (e) {}
 }
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STATE_KEY);
+    const raw = localStorage.getItem(stateKey());
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     // Validate schema
@@ -1351,7 +1590,7 @@ function loadState() {
 
 function getStats() {
   try {
-    const raw = localStorage.getItem(STATS_KEY);
+    const raw = localStorage.getItem(statsKey());
     if (!raw) return defaultStats();
     const parsed = JSON.parse(raw);
     if (typeof parsed.gamesPlayed !== 'number') return defaultStats();
@@ -1374,7 +1613,7 @@ function defaultStats() {
 
 function saveStats(stats) {
   try {
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    localStorage.setItem(statsKey(), JSON.stringify(stats));
   } catch (e) {}
 }
 
@@ -1441,7 +1680,7 @@ function renderStats() {
   if (gameState.gameStatus === 'WIN' || gameState.gameStatus === 'LOSE') {
     const shareBtn = document.createElement('button');
     shareBtn.className = 'btn-share';
-    shareBtn.innerHTML = 'Share <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+    shareBtn.innerHTML = t('share') + ' <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
     shareBtn.addEventListener('click', shareResults);
     footer.insertBefore(shareBtn, footer.firstChild);
 
@@ -1470,12 +1709,13 @@ function shareResults() {
     ? 'Challenge'
     : `#${gameState.dayOffset}`;
   const result = gameState.gameStatus === 'WIN' ? gameState.rowIndex : 'X';
-  const header = `FADELE ${puzzleNum} ${result}/${NUM_ROWS}`;
+  const hardLabel = gameSettings.difficulty === 'hard' ? ' \ud83d\udd25' : '';
+  const header = `FADELE ${puzzleNum} ${result}/${NUM_ROWS}${hardLabel}`;
   const text = header + '\n\n' + emojiGrid.join('\n');
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast('Copied to clipboard!');
+      showToast(t('copied'));
     }).catch(() => {
       fallbackCopy(text);
     });
@@ -1493,9 +1733,9 @@ function fallbackCopy(text) {
   textarea.select();
   try {
     document.execCommand('copy');
-    showToast('Copied to clipboard!');
+    showToast(t('copied'));
   } catch (e) {
-    showToast('Could not copy');
+    showToast(t('couldNotCopy'));
   }
   document.body.removeChild(textarea);
 }
@@ -1567,12 +1807,12 @@ document.getElementById('btn-create-challenge').addEventListener('click', () => 
   const word = input.value.trim().toUpperCase();
 
   if (word.length !== 5) {
-    errorEl.textContent = 'Word must be 5 letters';
+    errorEl.textContent = t('word5Letters');
     return;
   }
 
   if (!VALID_SET.has(word)) {
-    errorEl.textContent = 'Not a valid word';
+    errorEl.textContent = t('notValid');
     return;
   }
 
@@ -1582,10 +1822,10 @@ document.getElementById('btn-create-challenge').addEventListener('click', () => 
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(() => {
-      showToast('Challenge link copied!');
+      showToast(t('challengeCopied'));
       input.value = '';
     }).catch(() => {
-      showToast('Could not copy link');
+      showToast(t('couldNotCopy'));
     });
   } else {
     fallbackCopy(url);
@@ -1628,10 +1868,157 @@ function restoreFromState(saved) {
   }
 }
 
+// ========== Settings UI ==========
+document.getElementById('btn-settings').addEventListener('click', () => openModal('modal-settings'));
+
+// Toggle group handler
+document.querySelectorAll('.toggle-group').forEach(group => {
+  group.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = btn.getAttribute('data-value');
+      group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (group.id === 'toggle-language') {
+        if (value !== gameSettings.language) {
+          gameSettings.language = value;
+          saveSettings(gameSettings);
+          window.location.reload();
+        }
+      } else if (group.id === 'toggle-difficulty') {
+        gameSettings.difficulty = value;
+        saveSettings(gameSettings);
+        if (value === 'hard') {
+          document.body.classList.add('hard-mode');
+          // In hard mode, fade all previously submitted rows immediately
+          const rows = document.querySelectorAll('#board .row');
+          for (let r = 0; r < gameState.rowIndex; r++) {
+            if (gameState.evaluations[r] && !rows[r].classList.contains('faded')) {
+              rows[r].classList.add('faded');
+              if (!gameState.fadedRows.includes(r)) {
+                gameState.fadedRows.push(r);
+              }
+            }
+          }
+          // Clear keyboard hints
+          updateKeyboard();
+          saveState();
+        } else {
+          document.body.classList.remove('hard-mode');
+          // Re-apply normal fading rules
+          const rows = document.querySelectorAll('#board .row');
+          // Remove faded from rows that shouldn't be faded in easy mode
+          for (let r = 0; r < NUM_ROWS; r++) {
+            const threshold = getFadeThreshold(r);
+            if (gameState.rowIndex < threshold) {
+              rows[r].classList.remove('faded');
+            }
+          }
+          gameState.fadedRows = [];
+          applyFading(false);
+          // Restore keyboard hints
+          updateKeyboard();
+          saveState();
+        }
+      }
+    });
+  });
+});
+
+// ========== Apply Language to DOM ==========
+function applyLanguage() {
+  // Update how-to-play modal
+  const helpModal = document.querySelector('#modal-help .modal');
+  helpModal.querySelector('h2').textContent = t('howToPlayTitle');
+  const paragraphs = helpModal.querySelectorAll('p');
+  // We'll rebuild the help modal content
+  helpModal.innerHTML = `
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2>${t('howToPlayTitle')}</h2>
+    <p>${t('howToPlayP1')}</p>
+    <p>${t('howToPlayP2')}</p>
+    <ul>
+      <li><strong style="color:var(--color-correct)">${t('greenHint')}</strong>${t('greenDesc')}</li>
+      <li><strong style="color:var(--color-present)">${t('yellowHint')}</strong>${t('yellowDesc')}</li>
+      <li><strong style="color:var(--color-text-dim)">${t('grayHint')}</strong>${t('grayDesc')}</li>
+    </ul>
+    <p><strong>${t('exampleLabel')}</strong></p>
+    <div class="example-row">
+      <div class="example-tile correct">S</div>
+      <div class="example-tile absent">T</div>
+      <div class="example-tile present">A</div>
+      <div class="example-tile absent">R</div>
+      <div class="example-tile absent">E</div>
+    </div>
+    <p>${t('exampleDesc')}</p>
+    <h2 style="margin-top:20px">${t('twistTitle')}</h2>
+    <p>${t('twistP1')}</p>
+    <div class="example-row">
+      <div class="example-tile faded-ex">S</div>
+      <div class="example-tile faded-ex">T</div>
+      <div class="example-tile faded-ex">A</div>
+      <div class="example-tile faded-ex">R</div>
+      <div class="example-tile faded-ex">E</div>
+    </div>
+    <p class="fade-note">${t('fadeNote')}</p>
+    <p>${t('keyboardNote')}</p>
+    <p>${t('newDaily')}</p>
+  `;
+
+  // Re-bind help modal close button
+  helpModal.querySelector('.modal-close').addEventListener('click', () => {
+    document.getElementById('modal-help').classList.remove('open');
+  });
+
+  // Stats modal labels
+  document.querySelector('#modal-stats h2').textContent = t('statsTitle');
+  const statLabels = document.querySelectorAll('.stat-label');
+  const labelKeys = ['played', 'winPct', 'currentStreak', 'maxStreak'];
+  statLabels.forEach((el, i) => { if (labelKeys[i]) el.innerHTML = t(labelKeys[i]); });
+
+  document.querySelector('.distribution h3').textContent = t('distTitle');
+  document.querySelector('#countdown-section h4').textContent = t('nextFadele');
+  document.querySelector('.challenge-creator h3').textContent = t('challengeTitle');
+  document.getElementById('challenge-word-input').placeholder = t('challengePlaceholder');
+  document.getElementById('btn-create-challenge').textContent = t('createBtn');
+  document.getElementById('challenge-badge').textContent = t('challengeBadge');
+  document.getElementById('daily-link').textContent = t('dailyLink');
+
+  // Settings modal
+  document.querySelector('#modal-settings h2').textContent = t('settingsTitle');
+  document.querySelector('[data-i18n="languageLabel"]').textContent = t('languageLabel');
+  document.querySelector('[data-i18n="difficultyLabel"]').textContent = t('difficultyLabel');
+  document.querySelector('[data-i18n="settingsNote"]').textContent = t('settingsNote');
+  const easyBtn = document.querySelector('[data-i18n="easyBtn"]');
+  const hardBtn = document.querySelector('[data-i18n="hardBtn"]');
+  if (easyBtn) easyBtn.textContent = t('easyBtn');
+  if (hardBtn) hardBtn.textContent = t('hardBtn');
+
+  // Set toggle states from settings
+  document.querySelectorAll('#toggle-language .toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-value') === gameSettings.language);
+  });
+  document.querySelectorAll('#toggle-difficulty .toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-value') === gameSettings.difficulty);
+  });
+}
+
 // ========== Init ==========
 function init() {
-  initWordLists();
+  initWordLists(currentLang);
   createBoard();
+
+  // Apply language class and hard mode
+  if (currentLang === 'es') {
+    document.body.classList.add('lang-es');
+    document.documentElement.lang = 'es';
+  }
+  if (gameSettings.difficulty === 'hard') {
+    document.body.classList.add('hard-mode');
+  }
+
+  // Apply language to all DOM text
+  applyLanguage();
 
   const dayOffset = getDayOffset();
   const challengeWord = parseChallengeFromURL();
@@ -1685,14 +2072,34 @@ function init() {
 
   // Recompute fading for restored state
   if (gameState.rowIndex > 0) {
-    applyFading(false);
+    if (gameSettings.difficulty === 'hard') {
+      // Hard mode: all submitted rows should be faded instantly on restore
+      const rows = document.querySelectorAll('#board .row');
+      const newFaded = [];
+      for (let r = 0; r < gameState.rowIndex; r++) {
+        if (gameState.evaluations[r]) {
+          rows[r].classList.add('faded', 'no-transition');
+          newFaded.push(r);
+        }
+      }
+      gameState.fadedRows = newFaded;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          newFaded.forEach(r => {
+            document.querySelectorAll('#board .row')[r].classList.remove('no-transition');
+          });
+        });
+      });
+    } else {
+      applyFading(false);
+    }
   }
 
   saveState();
 
   // First visit — show help
-  if (!localStorage.getItem(FIRST_VISIT_KEY)) {
-    localStorage.setItem(FIRST_VISIT_KEY, 'true');
+  if (!localStorage.getItem(firstVisitKey())) {
+    localStorage.setItem(firstVisitKey(), 'true');
     setTimeout(() => openModal('modal-help'), 500);
   }
 }
