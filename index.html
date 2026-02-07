@@ -1186,6 +1186,12 @@ function markWordUsed(word) {
 }
 
 // ========== Challenge Mode ==========
+function getChallengeLangFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const lang = params.get('lang');
+  return (lang === 'es') ? 'es' : (lang === 'en' ? 'en' : null);
+}
+
 function parseChallengeFromURL() {
   const params = new URLSearchParams(window.location.search);
   const encoded = params.get('challenge');
@@ -1818,7 +1824,7 @@ document.getElementById('btn-create-challenge').addEventListener('click', () => 
 
   errorEl.textContent = '';
   const encoded = btoa(word);
-  const url = window.location.origin + window.location.pathname + '?challenge=' + encoded;
+  const url = window.location.origin + window.location.pathname + '?challenge=' + encoded + '&lang=' + currentLang;
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(() => {
@@ -2005,6 +2011,12 @@ function applyLanguage() {
 
 // ========== Init ==========
 function init() {
+  // If a challenge URL includes a lang param, override language for this session
+  const challengeLang = getChallengeLangFromURL();
+  if (challengeLang) {
+    currentLang = challengeLang;
+  }
+
   initWordLists(currentLang);
   createBoard();
 
@@ -2012,6 +2024,9 @@ function init() {
   if (currentLang === 'es') {
     document.body.classList.add('lang-es');
     document.documentElement.lang = 'es';
+  } else {
+    document.body.classList.remove('lang-es');
+    document.documentElement.lang = 'en';
   }
   if (gameSettings.difficulty === 'hard') {
     document.body.classList.add('hard-mode');
