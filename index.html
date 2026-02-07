@@ -82,6 +82,19 @@ header {
 .header-left { left: 16px; }
 .header-right { right: 16px; }
 
+.lang-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-bg);
+  background-color: var(--color-text-dim);
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
 .header-btn {
   background: none;
   border: none;
@@ -766,6 +779,7 @@ body.lang-es .key-enie {
 <header>
   <div class="header-left">
     <button class="header-btn" id="btn-help" aria-label="How to play">?</button>
+    <span class="lang-badge" id="lang-badge">EN</span>
   </div>
   <div class="title-wrap">
     <h1>FADELE</h1>
@@ -1999,6 +2013,9 @@ function applyLanguage() {
   const hardBtn = document.querySelector('[data-i18n="hardBtn"]');
   if (easyBtn) easyBtn.textContent = t('easyBtn');
   if (hardBtn) hardBtn.textContent = t('hardBtn');
+
+  // Language badge in header
+  document.getElementById('lang-badge').textContent = currentLang.toUpperCase();
 
   // Set toggle states from settings
   document.querySelectorAll('#toggle-language .toggle-btn').forEach(btn => {
