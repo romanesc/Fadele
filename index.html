@@ -123,6 +123,24 @@ h1 {
   display: block;
 }
 
+.daily-link {
+  display: none;
+  font-size: 0.7rem;
+  color: var(--color-correct);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.daily-link:hover {
+  text-decoration: underline;
+}
+
+.daily-link.visible {
+  display: block;
+}
+
 .title-wrap {
   display: flex;
   flex-direction: column;
@@ -688,6 +706,7 @@ h1 {
   <div class="title-wrap">
     <h1>FADELE</h1>
     <div class="challenge-badge" id="challenge-badge">Friend Challenge</div>
+    <a href="./" class="daily-link" id="daily-link">Play Today's FADELE</a>
   </div>
   <div class="header-right">
     <button class="header-btn" id="btn-stats" aria-label="Statistics">
@@ -1635,6 +1654,7 @@ function init() {
     }
 
     document.getElementById('challenge-badge').classList.add('visible');
+    document.getElementById('daily-link').classList.add('visible');
   } else {
     // Daily mode
     const saved = loadState();
